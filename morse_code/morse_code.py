@@ -11,7 +11,7 @@ q = Queue.Queue()
 def toMorse(message):
     morse = [letter_to_morse[c] for c in message]
     #print(morse)
-    return message
+    return morse
 
 def toMessage(morse):
     message = [morse_to_letter[c] for c in morse]
