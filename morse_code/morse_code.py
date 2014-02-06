@@ -8,6 +8,8 @@ morse_to_letter = {v:k for (k,v) in letter_to_morse.items()}
 
 q = Queue.Queue()
 
+transmit_speed = 1000 # speed of one clock cycle, in ms
+
 def toMorse(message):
     morse = [letter_to_morse[c] for c in message]
     #print(morse)
@@ -23,13 +25,12 @@ def blinkMessage(message):
     for c in morse:
         for i in c:
             if i == ".":
-                blink(1)
+                dot(transmit_speed)
             else:
-                blink(3)
-            sleep(1)
+                dash(transmit_speed)
             if c.index(i) == len(c)-1:
-                sleep(2) # plus 1 above = 3 -> between letters
-    sleep(3) # plus 3 above = 6 -> between words
+                sleep((2*transmit_speed)/1000) # gap between characters
+    sleep((4*transmit_speed)/1000) # plus 3 above = 7 -> between words
 
 def retransmitMode():
     t = Thread(target=blinkWorker)
@@ -47,3 +48,8 @@ def blinkWorker():
         if not word is None:
             blinkMessage(word)
             q.task_done()
+
+if __name__ == '__main__':
+    in_pin = 7
+    out_pin = 18
+    init_board(in_pin,out_pin)
