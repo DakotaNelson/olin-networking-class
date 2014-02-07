@@ -16,7 +16,7 @@ def toMorse(message):
     return morse
 
 def toMessage(morse):
-    message = [morse_to_letter[for c in morse]
+    message = [morse_to_letter[c] for c in morse]
     #print(message)
     return message
 
