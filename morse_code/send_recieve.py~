@@ -22,9 +22,7 @@ def init_board(ip,op,wordQueue):
 	
     GPIO.add_event_detect(in_pin, GPIO.RISING, callback=risingCallback)
     GPIO.add_event_detect(in_pin, GPIO.FALLING, callback=fallingCallback)
-	t = Thread(target=findWords)
-	t.daemon = True
-	t.start()
+
 def on(): GPIO.output(out_pin,True)
 
 def off(): GPIO.output(out_pin,False)

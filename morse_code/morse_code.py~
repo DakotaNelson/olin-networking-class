@@ -16,7 +16,7 @@ def toMorse(message):
     return morse
 
 def toMessage(morse):
-    message = [morse_to_letter[for c in morse]
+    message = [morse_to_letter[c] for c in morse]
     #print(message)
     return message
 
@@ -52,4 +52,4 @@ def blinkWorker():
 if __name__ == '__main__':
     in_pin = 7
     out_pin = 18
-    init_board(in_pin,out_pin,q)
+    init_board(in_pin,out_pin)
