@@ -39,7 +39,7 @@ def dash(t):
 def risingCallback(channel):
     print('Rising!')
     pin_high = True
-    if not GPIO.input(in_pin): print('wat')
+    if not GPIO.input(channel): print('wat')
     edgeList.append((time(),0))
 
 def fallingCallback(channel):
@@ -49,6 +49,14 @@ def fallingCallback(channel):
     (edgeList[-1])[1] = time()-(edgeList[-1])[0]
     print(edgeList)
     morseQueue.put_nowait(edgeList[-1])
+
+def waveCallback(channel):
+    if GPIO.input(channel):
+        #channel is high
+        risingCallback(channel)
+    else:
+        #channel is low
+        fallingCallback(channel)
 
 def sleepms(t): # lets you specify sleep in ms and also doesn't lock up
     ##TODO: actually use this function
@@ -153,8 +161,8 @@ if __name__ == '__main__':
     GPIO.setup(out_pin,GPIO.OUT)
     GPIO.setup(in_pin,GPIO.IN)
 
-    GPIO.add_event_detect(in_pin, GPIO.RISING, callback=risingCallback)
-    GPIO.add_event_detect(in_pin, GPIO.FALLING, callback=fallingCallback)
+    GPIO.add_event_detect(in_pin, GPIO.BOTH, callback=waveCallback, bouncetime=100)
+    #GPIO.add_event_detect(in_pin, GPIO.FALLING, callback=fallingCallback)
 
     recieveThread = Thread(target=findWords)
     recieveThread.daemon = True
