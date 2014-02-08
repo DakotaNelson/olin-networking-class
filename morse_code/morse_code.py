@@ -51,6 +51,7 @@ def fallingCallback(channel):
     (edgeList[-1])[1] = time()-(edgeList[-1])[0]
     print(edgeList)
     morseQueue.put_nowait(edgeList[-1])
+    global edgeList = []
 
 def waveCallback(channel):
     if GPIO.input(channel):
@@ -77,38 +78,41 @@ def findWords():
 def translate():
     letter_to_morse = {"A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
     morse_to_letter = {v:k for (k,v) in letter_to_morse.items()}
-    edges = [item for item in morseQueue.queue]
+    queueSize = 0
+    while not morseQueue.empty():
+        edges[i] = morseQueue.get()
+        queueSize += 1
+    #edges = [item for item in morseQueue.queue]
     tolerance = .3
     char = ''
     words = []
-    for i in range(len(edges)):
-        if abs(edges[i][0]-edges[i-1][0]-edges[i-1][1] - 1) < tolerance:
-            if abs((edges[i-1])[1]-1) < tolerance:
+    tDot = (transmit_speed)/1000
+    tDash = (3*transmit_speed)/1000
+
+    for i in range(1,len(edges)-1):
+        tStart = edges[i][0]
+        tDuration = edges[i][1]
+        tPrevStart = edges[i-1][0]
+        tPrevDuration = edges[i-1][1]
+        tPrevEnd = (tPrevStart + tPrevDuration) # when the last wave ended
+        tLow = tStart - tPrevEnd # the amount of time the line was low before this
+        if abs(tLow - tDot) < tolerance: # if there was only one space...
+            if abs((tPrevDuration-tDot) < tolerance:
                 char += '.'
-            elif abs((edges[i-1])[1]-3) < tolerance:
+            elif abs(tPrevDuration-tDash) < tolerance:
                 char += '-'
-            if i == edges -1:
-                if abs((edges[i])[1]-1) < tolerance:
-                    char += '.'
-                elif abs((edges[i])[1]-3) < tolerance:
-                    char += '-'
-        else:
-            if abs((edges[i-1])[1]-1) < tolerance:
-                char += '.'
-            elif abs((edges[i-1])[1]-3) < tolerance:
-                char += '-'
-            if i == edges -1:
-                if abs((edges[i])[1]-1) < tolerance:
-                    char += '.'
-                elif abs((edges[i])[1]-3) < tolerance:
-                    char += '-'
-            words.append(char)
+        else: # there were three spaces...
+            words.append(char) #make a new morse character
             char = ''
-    char = ''
-    for word in words:
-        char += morse_to_letter[word]
+            if abs(tPrevDuration - tDot) < tolerance:
+                char += '.'
+            elif abs(tPrevDuration - tDash) < tolerance:
+                char += '-'
+    message = []
+    for letter in words:
+        message.append(morse_to_letter[letter])
     print('----------------')
-    print(char)
+    print(message)
     print('----------------')
     #transmitQueue.put_nowait(char)
 
