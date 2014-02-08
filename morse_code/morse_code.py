@@ -40,7 +40,7 @@ def risingCallback(channel):
     print('Rising!')
     pin_high = True
     if not GPIO.input(channel): print('wat')
-    edgeList.append((time(),0))
+    edgeList.append([time(),0])
 
 def fallingCallback(channel):
     print('Falling!')
