@@ -11,24 +11,11 @@ pin_high = False
 transmit_speed = 1000 # speed of one clock cycle, in ms
 
 morseQueue = Queue.Queue()
-q = Queue.Queue()
+transmitQueue = Queue.Queue()
 
-def init_board(ip,op,wordQueue):
-    GPIO.setmode(GPIO.BOARD)
-    in_pin = ip
-    out_pin = op
-    q = wordQueue
-
-    GPIO.setup(out_pin,GPIO.OUT)
-    GPIO.setup(in_pin,GPIO.IN)
-
-    GPIO.add_event_detect(in_pin, GPIO.RISING, callback=risingCallback)
-    GPIO.add_event_detect(in_pin, GPIO.FALLING, callback=fallingCallback)
-    t = Thread(target=findWords)
-    t.daemon = True
-    t.start()
-
-def on(): GPIO.output(out_pin,True)
+def on():
+    print(out_pin)
+    GPIO.output(out_pin,True)
 
 def off(): GPIO.output(out_pin,False)
 
@@ -51,12 +38,12 @@ def dash(t):
     off()
     sleep(t/1000)
 
-def risingCallback():
+def risingCallback(channel):
     pin_high = True
     if not GPIO.input(in_pin): print('wat')
     edgeList.append((time(),0))
 
-def fallingCallback():
+def fallingCallback(channel):
     pin_high = False
     if (edgeList[-1])[1] != 0: print('wat')
     (edgeList[-1])[1] = time()-(edgeList[-1])[0]
@@ -143,23 +130,32 @@ def blinkMessage(message):
     sleep((4*transmit_speed)/1000) # plus 3 above = 7 -> between words
 
 def retransmitMode():
-    t = Thread(target=blinkWorker)
-    t.daemon = True
-    t.start()
+    transmitThread = Thread(target=blinkWorker)
+    transmitThread.daemon = True
+    transmitThread.start()
     while(True):
         #recieve message
         end_of_word = False ##TODO make this work for reals
         if(end_of_word):
-            q.put_nowait(word)
+            transmitQueue.put_nowait(word)
 
 def blinkWorker():
     while True:
-        word = q.get()
+        word = transmitQueue.get()
         if not word is None:
             blinkMessage(word)
-            q.task_done()
+            transmitQueue.task_done()
 
 if __name__ == '__main__':
-    in_pin = 7
-    out_pin = 18
-    init_board(in_pin,out_pin,q)
+    GPIO.setmode(GPIO.BOARD)
+
+    GPIO.setup(out_pin,GPIO.OUT)
+    GPIO.setup(in_pin,GPIO.IN)
+
+    GPIO.add_event_detect(in_pin, GPIO.RISING, callback=risingCallback)
+    GPIO.add_event_detect(in_pin, GPIO.FALLING, callback=fallingCallback)
+    recieveThread = Thread(target=findWords)
+    recieveThread.daemon = True
+    recieveThread.start()
+
+    #we should probably do a GPIO.cleanup() in here somewhere.
