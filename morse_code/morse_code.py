@@ -78,7 +78,7 @@ def findWords():
         while pin_high:
             startWait = time()
         while not pin_high:
-            if (time()-startWait >= ((3*transmit_speed)/1000)) and not morseQueue.empty(): translate()
+            if (time()-startWait >= ((3*transmit_speed)/1000)-.1) and not morseQueue.empty(): translate()
 
 def translate():
     letter_to_morse = {"A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
@@ -108,6 +108,7 @@ def translate():
     #transmitQueue.put_nowait(char)
 
 def dotOrDash(edge):
+    tolerance = 0.3
     tDot = (transmit_speed)/1000
     tDash = (3*transmit_speed)/1000
     tStart = edge[0]
