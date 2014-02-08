@@ -98,7 +98,7 @@ def translate():
         tPrevEnd = (tPrevStart + tPrevDuration) # when the last wave ended
         tLow = tStart - tPrevEnd # the amount of time the line was low before this
         if abs(tLow - tDot) < tolerance: # if there was only one space...
-            if abs((tPrevDuration-tDot) < tolerance:
+            if abs(tPrevDuration-tDot) < tolerance:
                 char += '.'
             elif abs(tPrevDuration-tDash) < tolerance:
                 char += '-'
