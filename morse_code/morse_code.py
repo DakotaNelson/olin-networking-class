@@ -71,6 +71,7 @@ def waveCallback(channel):
 #    return
 
 def findWords():
+    startWait = time()
     while True:
         while pin_high:
             startWait = time()
