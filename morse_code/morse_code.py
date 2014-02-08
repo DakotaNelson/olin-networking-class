@@ -80,10 +80,13 @@ def translate():
     letter_to_morse = {"A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
     morse_to_letter = {v:k for (k,v) in letter_to_morse.items()}
     queueSize = 0
+    edges = []
     while not morseQueue.empty():
         edges[i] = morseQueue.get()
         queueSize += 1
     #edges = [item for item in morseQueue.queue]
+    if len(edges) == 0:
+        return # no waveforms to translate
     tolerance = .3
     char = ''
     words = []
