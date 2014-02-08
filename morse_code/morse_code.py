@@ -77,6 +77,7 @@ def findWords():
             startWait = time()
         #might need to check value of queue length
         while not pin_high:
+            print(time()-startWait)
             if (time()-startWait > ((7*transmit_speed)/1000)) and not morseQueue.empty(): translate()
 
 def translate():
