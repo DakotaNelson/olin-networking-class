@@ -55,6 +55,7 @@ def fallingCallback(channel):
     edgeList = []
 
 def waveCallback(channel):
+    sleep(.01) # debounce a little
     if GPIO.input(channel):
         #channel is high
         risingCallback(channel)
@@ -82,7 +83,7 @@ def translate():
     queueSize = 0
     edges = []
     while not morseQueue.empty():
-        edges[queSize] = morseQueue.get()
+        edges[queueSize] = morseQueue.get()
         queueSize += 1
     if len(edges) == 0:
         return # no waveforms to translate
