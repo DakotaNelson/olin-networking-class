@@ -82,9 +82,8 @@ def translate():
     queueSize = 0
     edges = []
     while not morseQueue.empty():
-        edges[i] = morseQueue.get()
+        edges[queSize] = morseQueue.get()
         queueSize += 1
-    #edges = [item for item in morseQueue.queue]
     if len(edges) == 0:
         return # no waveforms to translate
     tolerance = .3
