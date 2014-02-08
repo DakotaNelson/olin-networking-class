@@ -13,9 +13,7 @@ transmit_speed = 1000 # speed of one clock cycle, in ms
 morseQueue = Queue.Queue()
 transmitQueue = Queue.Queue()
 
-def on():
-    print(out_pin)
-    GPIO.output(out_pin,True)
+def on(): GPIO.output(out_pin,True)
 
 def off(): GPIO.output(out_pin,False)
 
@@ -39,11 +37,13 @@ def dash(t):
     sleep(t/1000)
 
 def risingCallback(channel):
+    print('Rising!')
     pin_high = True
     if not GPIO.input(in_pin): print('wat')
     edgeList.append((time(),0))
 
 def fallingCallback(channel):
+    print('Falling!')
     pin_high = False
     if (edgeList[-1])[1] != 0: print('wat')
     (edgeList[-1])[1] = time()-(edgeList[-1])[0]
