@@ -51,7 +51,8 @@ def fallingCallback(channel):
     (edgeList[-1])[1] = time()-(edgeList[-1])[0]
     print(edgeList)
     morseQueue.put_nowait(edgeList[-1])
-    global edgeList = []
+    global edgeList
+    edgeList = []
 
 def waveCallback(channel):
     if GPIO.input(channel):
