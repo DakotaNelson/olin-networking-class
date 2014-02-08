@@ -171,7 +171,7 @@ if __name__ == '__main__':
     GPIO.setup(out_pin,GPIO.OUT)
     GPIO.setup(in_pin,GPIO.IN)
 
-    GPIO.add_event_detect(in_pin, GPIO.BOTH, callback=waveCallback, bouncetime=100)
+    GPIO.add_event_detect(in_pin, GPIO.BOTH, callback=waveCallback)
     #GPIO.add_event_detect(in_pin, GPIO.FALLING, callback=fallingCallback)
 
     recieveThread = Thread(target=findWords)
