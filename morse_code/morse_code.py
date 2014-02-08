@@ -38,12 +38,14 @@ def dash(t):
 
 def risingCallback(channel):
     print('Rising!')
+    global pin_high
     pin_high = True
     if not GPIO.input(channel): print('wat')
     edgeList.append([time(),0])
 
 def fallingCallback(channel):
     print('Falling!')
+    global pin_high
     pin_high = False
     global edgeList
     if len(edgeList) == 0:
@@ -77,7 +79,6 @@ def findWords():
             startWait = time()
         #might need to check value of queue length
         while not pin_high:
-            print(time()-startWait)
             if (time()-startWait > ((7*transmit_speed)/1000)) and not morseQueue.empty(): translate()
 
 def translate():
