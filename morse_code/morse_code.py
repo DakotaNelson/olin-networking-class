@@ -37,14 +37,12 @@ def dash(t):
     sleep(t/1000)
 
 def risingCallback(channel):
-    print('Rising!')
     global pin_high
     pin_high = True
     if not GPIO.input(channel): print('wat')
     edgeList.append([time(),0])
 
 def fallingCallback(channel):
-    print('Falling!')
     global pin_high
     pin_high = False
     global edgeList
@@ -52,7 +50,6 @@ def fallingCallback(channel):
         return # there's no matching rise for this fall
     if edgeList[-1][1] != 0: print('wat')
     edgeList[-1][1] = time()-edgeList[-1][0]
-    print(edgeList)
     morseQueue.put_nowait(edgeList[-1])
     edgeList = []
 
@@ -98,13 +95,7 @@ def translate():
         if result is not None:
             char += result
 
-    #message = []
-    #print(words)
-    #for letter in words:
-    #    message.append(morse_to_letter[letter])
-    print('----------------')
     print(morse_to_letter[char])
-    print('----------------')
     #transmitQueue.put_nowait(char)
 
 def dotOrDash(edge):
@@ -132,12 +123,10 @@ morse_to_letter = {v:k for (k,v) in letter_to_morse.items()}
 
 def toMorse(message):
     morse = [letter_to_morse[c] for c in message]
-    #print(morse)
     return morse
 
 def toMessage(morse):
     message = [morse_to_letter[c] for c in morse]
-    #print(message)
     return message
 
 def blinkMessage(message):
@@ -151,13 +140,6 @@ def blinkMessage(message):
             if i == len(c)-1:
                 sleep((2*transmit_speed)/1000) # gap between characters
     sleep((4*transmit_speed)/1000) # plus 3 above = 7 -> between words
-
-#def retransmitMode():
-#    while(True):
-#        #recieve message
-#        end_of_word = False ##TODO make this work for reals
-#        if(end_of_word):
-#            transmitQueue.put_nowait(word)
 
 def blinkWorker():
     while True:
@@ -173,7 +155,6 @@ if __name__ == '__main__':
     GPIO.setup(in_pin,GPIO.IN)
 
     GPIO.add_event_detect(in_pin, GPIO.BOTH, callback=waveCallback)
-    #GPIO.add_event_detect(in_pin, GPIO.FALLING, callback=fallingCallback)
 
     recieveThread = Thread(target=findWords)
     recieveThread.daemon = True
