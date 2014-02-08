@@ -45,13 +45,13 @@ def risingCallback(channel):
 def fallingCallback(channel):
     print('Falling!')
     pin_high = False
+    global edgeList
     if len(edgeList) == 0:
         return # there's no matching rise for this fall
-    if (edgeList[-1])[1] != 0: print('wat')
-    (edgeList[-1])[1] = time()-(edgeList[-1])[0]
+    if edgeList[-1][1] != 0: print('wat')
+    edgeList[-1][1] = time()-edgeList[-1][0]
     print(edgeList)
     morseQueue.put_nowait(edgeList[-1])
-    global edgeList
     edgeList = []
 
 def waveCallback(channel):
@@ -72,10 +72,11 @@ def waveCallback(channel):
 
 def findWords():
     while True:
-        startWait = time()
+        while pin_high:
+            startWait = time()
         #might need to check value of queue length
         while not pin_high:
-            if time()-startWait>=7 and not morseQueue.empty(): translate()
+            if (time()-startWait >= ((7*transmit_speed)/1000)) and not morseQueue.empty(): translate()
 
 def translate():
     letter_to_morse = {"A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
@@ -86,6 +87,7 @@ def translate():
         edges.append(morseQueue.get())
     if len(edges) == 0:
         return # no waveforms to translate
+    print(edges)
     tolerance = .3
     char = ''
     words = []
@@ -112,6 +114,7 @@ def translate():
             elif abs(tPrevDuration - tDash) < tolerance:
                 char += '-'
     message = []
+    print(words)
     for letter in words:
         message.append(morse_to_letter[letter])
     print('----------------')
