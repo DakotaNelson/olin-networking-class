@@ -77,9 +77,8 @@ def findWords():
     while True:
         while pin_high:
             startWait = time()
-        #might need to check value of queue length
         while not pin_high:
-            if (time()-startWait > ((7*transmit_speed)/1000)) and not morseQueue.empty(): translate()
+            if (time()-startWait > ((3*transmit_speed)/1000)) and not morseQueue.empty(): translate()
 
 def translate():
     letter_to_morse = {"A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
@@ -90,43 +89,39 @@ def translate():
         edges.append(morseQueue.get())
     if len(edges) == 0:
         return # no waveforms to translate
-    print(edges)
     tolerance = .3
     char = ''
-    words = []
-    tDot = (transmit_speed)/1000
-    tDash = (3*transmit_speed)/1000
+    #words = []
 
-    for i in range(1,len(edges)-1):
-        tStart = edges[i][0]
-        tDuration = edges[i][1]
-        tPrevStart = edges[i-1][0]
-        tPrevDuration = edges[i-1][1]
-        tPrevEnd = (tPrevStart + tPrevDuration) # when the last wave ended
-        tLow = tStart - tPrevEnd # the amount of time the line was low before this
-        if abs(tLow - tDot) < tolerance: # if there was only one space...
-            if abs(tPrevDuration-tDot) < tolerance:
-                char += '.'
-            elif abs(tPrevDuration-tDash) < tolerance:
-                char += '-'
-        else: # there were three spaces...
-            words.append(char) #make a new morse character
-            char = ''
-            if abs(tPrevDuration - tDot) < tolerance:
-                char += '.'
-            elif abs(tPrevDuration - tDash) < tolerance:
-                char += '-'
-    message = []
-    print(words)
-    for letter in words:
-        message.append(morse_to_letter[letter])
+    for edge in edges:
+        result = dotOrDash(edge)
+        if result is not None:
+            char += result
+
+    #message = []
+    #print(words)
+    #for letter in words:
+    #    message.append(morse_to_letter[letter])
     print('----------------')
-    print(message)
+    print(morse_to_letter[char])
     print('----------------')
     #transmitQueue.put_nowait(char)
 
-def recieve():
-    pass
+def dotOrDash(edge):
+    tDot = (transmit_speed)/1000
+    tDash = (3*transmit_speed)/1000
+    tStart = edge[0]
+    tDuration = edge[1]
+    #tPrevStart = edges[i-1][0]
+    #tPrevDuration = edges[i-1][1]
+    #tPrevEnd = (tPrevStart + tPrevDuration) # when the last wave ended
+    #tLow = tStart - tPrevEnd # the amount of time the line was low before this
+    if abs(tPrevDuration-tDot) < tolerance:
+        return '.'
+    elif abs(tPrevDuration-tDash) < tolerance:
+        return '-'
+    else
+        return None
 
 letter_to_morse = {"A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
 #This is currently only global for toMorse and toMessage
