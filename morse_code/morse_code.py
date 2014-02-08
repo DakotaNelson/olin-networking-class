@@ -142,12 +142,12 @@ def toMessage(morse):
 def blinkMessage(message):
     morse = toMorse(message)
     for c in morse:
-        for i in c:
-            if i == ".":
+        for i in range(len(c)):
+            if c[i] == ".":
                 dot(transmit_speed)
             else:
                 dash(transmit_speed)
-            if c.index(i) == len(c)-1:
+            if i == len(c)-1:
                 sleep((2*transmit_speed)/1000) # gap between characters
     sleep((4*transmit_speed)/1000) # plus 3 above = 7 -> between words
 
