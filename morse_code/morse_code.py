@@ -78,7 +78,7 @@ def findWords():
         while pin_high:
             startWait = time()
         while not pin_high:
-            if (time()-startWait > ((3*transmit_speed)/1000)) and not morseQueue.empty(): translate()
+            if (time()-startWait >= ((3*transmit_speed)/1000)) and not morseQueue.empty(): translate()
 
 def translate():
     letter_to_morse = {"A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
@@ -116,9 +116,9 @@ def dotOrDash(edge):
     #tPrevDuration = edges[i-1][1]
     #tPrevEnd = (tPrevStart + tPrevDuration) # when the last wave ended
     #tLow = tStart - tPrevEnd # the amount of time the line was low before this
-    if abs(tPrevDuration-tDot) < tolerance:
+    if abs(tDuration-tDot) < tolerance:
         return '.'
-    elif abs(tPrevDuration-tDash) < tolerance:
+    elif abs(tDuration-tDash) < tolerance:
         return '-'
     else:
         return None
