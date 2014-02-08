@@ -45,6 +45,8 @@ def risingCallback(channel):
 def fallingCallback(channel):
     print('Falling!')
     pin_high = False
+    if len(edgeList) == 0:
+        return # there's no matching rise for this fall
     if (edgeList[-1])[1] != 0: print('wat')
     (edgeList[-1])[1] = time()-(edgeList[-1])[0]
     print(edgeList)
@@ -58,19 +60,19 @@ def waveCallback(channel):
         #channel is low
         fallingCallback(channel)
 
-def sleepms(t): # lets you specify sleep in ms and also doesn't lock up
-    ##TODO: actually use this function
-    start = time()
-    while time() - start < (t/1000):
-        pass
-    return
+#def sleepms(t): # lets you specify sleep in ms and also doesn't lock up
+#    ##TODO: actually use this function
+#    start = time()
+#    while time() - start < (t/1000):
+#        pass
+#    return
 
 def findWords():
     while True:
         startWait = time()
         #might need to check value of queue length
         while not pin_high:
-            if time()-startWait>=7: translate()
+            if time()-startWait>=7 and not morseQueue.empty(): translate()
 
 def translate():
     letter_to_morse = {"A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
@@ -79,7 +81,7 @@ def translate():
     tolerance = .3
     char = ''
     words = []
-    for i in range(len(1,edges)):
+    for i in range(len(edges)):
         if abs(edges[i][0]-edges[i-1][0]-edges[i-1][1] - 1) < tolerance:
             if abs((edges[i-1])[1]-1) < tolerance:
                 char += '.'
