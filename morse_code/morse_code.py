@@ -47,6 +47,7 @@ def fallingCallback(channel):
     pin_high = False
     if (edgeList[-1])[1] != 0: print('wat')
     (edgeList[-1])[1] = time()-(edgeList[-1])[0]
+    print(edgeList)
     morseQueue.put_nowait(edgeList[-1])
 
 def sleepms(t): # lets you specify sleep in ms and also doesn't lock up
@@ -94,9 +95,12 @@ def translate():
             words.append(char)
             char = ''
     char = ''
-    for i in words:
-        char += morse_to_letter[i]
-    q.put_nowait(char)
+    for word in words:
+        char += morse_to_letter[word]
+    print('----------------')
+    print(char)
+    print('----------------')
+    #transmitQueue.put_nowait(char)
 
 def recieve():
     pass
@@ -129,15 +133,12 @@ def blinkMessage(message):
                 sleep((2*transmit_speed)/1000) # gap between characters
     sleep((4*transmit_speed)/1000) # plus 3 above = 7 -> between words
 
-def retransmitMode():
-    transmitThread = Thread(target=blinkWorker)
-    transmitThread.daemon = True
-    transmitThread.start()
-    while(True):
-        #recieve message
-        end_of_word = False ##TODO make this work for reals
-        if(end_of_word):
-            transmitQueue.put_nowait(word)
+#def retransmitMode():
+#    while(True):
+#        #recieve message
+#        end_of_word = False ##TODO make this work for reals
+#        if(end_of_word):
+#            transmitQueue.put_nowait(word)
 
 def blinkWorker():
     while True:
@@ -154,8 +155,13 @@ if __name__ == '__main__':
 
     GPIO.add_event_detect(in_pin, GPIO.RISING, callback=risingCallback)
     GPIO.add_event_detect(in_pin, GPIO.FALLING, callback=fallingCallback)
+
     recieveThread = Thread(target=findWords)
     recieveThread.daemon = True
     recieveThread.start()
+
+    transmitThread = Thread(target=blinkWorker)
+    transmitThread.daemon = True
+    transmitThread.start()
 
     #we should probably do a GPIO.cleanup() in here somewhere.
