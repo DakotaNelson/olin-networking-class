@@ -114,19 +114,31 @@ def translate():
     char = morse_to_letter[char]
     msgBuffer.append(char)
     if char == '+': # and (msgBuffer[0] + msgBuffer[1]) == ourMac:
-        print(msgBuffer)
+        #print(msgBuffer)
+        printMsg(msgBuffer)
         msgBuffer = []
     firstTransmit = True
     if len(msgBuffer) < 2:
         pass
     elif len(msgBuffer) >= 2 and (msgBuffer[0] + msgBuffer[1]) == ourMac:
-        print("to us!")
+        #print("to us!")
+        pass
     else:
         if firstTransmit:
             transmitQueue.put_nowait(msgBuffer[0])
             firstTransmit=False
         transmitQueue.put_nowait(char)
-    print(char)
+    #print(char)
+
+def printMsg(packet):
+    nice = msgBuffer[0] + msgBuffer[1] + '|' # TO:
+    nice += msgBuffer[2] + msgBuffer[3] + '|' # FROM:
+    nice += msgBuffer[4] + msgBuffer[5] + '|' # LENGTH
+    length = int(msgBuffer[4] + msgBuffer[5]) # Length of message
+    for i in range(6,length):
+        nice += msgBuffer[i]
+    msg += '|'
+    print(msg)
 
 def dotOrDash(edge):
     tolerance = 0.3
