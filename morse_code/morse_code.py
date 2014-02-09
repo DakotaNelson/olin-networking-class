@@ -115,9 +115,9 @@ def translate():
     if char == '+':
         print(msgBuffer)
         msgBuffer = []
-    if msgBuffer[0] + msgBuffer[1] == ourMac:
+    if (msgBuffer[0] + msgBuffer[1]) == ourMac:
         print("to us!")
-    #print(morse_to_letter[char])
+    print(morse_to_letter[char])
     #transmitQueue.put_nowait(char)
 
 def dotOrDash(edge):
