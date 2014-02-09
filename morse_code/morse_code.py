@@ -13,6 +13,7 @@ transmit_speed = 1000 # speed of one clock cycle, in ms
 morseQueue = Queue.Queue()
 transmitQueue = Queue.Queue()
 msgBuffer = []
+ourMac = ''
 
 def changeBase(x,base):
     y = ''
@@ -188,5 +189,5 @@ if __name__ == '__main__':
     transmitThread = Thread(target=blinkWorker)
     transmitThread.daemon = True
     transmitThread.start()
-
+    ourMac = 'AA'
     #we should probably do a GPIO.cleanup() in here somewhere.
