@@ -12,6 +12,7 @@ transmit_speed = 1000 # speed of one clock cycle, in ms
 
 morseQueue = Queue.Queue()
 transmitQueue = Queue.Queue()
+msgBuffer = []
 
 def on(): GPIO.output(out_pin,True)
 
@@ -78,24 +79,30 @@ def findWords():
             if (time()-startWait >= ((3*transmit_speed)/1000)-.1) and not morseQueue.empty(): translate()
 
 def translate():
-    letter_to_morse = {"A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
+    letter_to_morse = {"+":".-.-.","A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
     morse_to_letter = {v:k for (k,v) in letter_to_morse.items()}
     queueSize = 0
     edges = []
+    global msgBuffer
     while not morseQueue.empty():
         edges.append(morseQueue.get())
     if len(edges) == 0:
         return # no waveforms to translate
     tolerance = .3
     char = ''
-    #words = []
 
     for edge in edges:
         result = dotOrDash(edge)
         if result is not None:
             char += result
 
-    print(morse_to_letter[char])
+    msgBuffer.append(char)
+    if char == '+':
+        print(msgBuffer)
+        msgBuffer = []
+    if msgBuffer[0] + msgBuffer[1] == ourMac:
+        print("to us!")
+    #print(morse_to_letter[char])
     #transmitQueue.put_nowait(char)
 
 def dotOrDash(edge):
@@ -115,7 +122,7 @@ def dotOrDash(edge):
     else:
         return None
 
-letter_to_morse = {"A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
+letter_to_morse = {"+":".-.-.","A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
 #This is currently only global for toMorse and toMessage
 
 morse_to_letter = {v:k for (k,v) in letter_to_morse.items()}
@@ -143,10 +150,14 @@ def blinkMessage(message):
 
 def blinkWorker():
     while True:
-        word = transmitQueue.get()
+        message = transmitQueue.get()
         if not word is None:
-            blinkMessage(word)
+            blinkMessage(message)
             transmitQueue.task_done()
+
+def packetize(macto,macfrom,msg):
+    packet = macto+macfrom+changeBase(len(msg))+msg
+    return packet+checksum(packet)
 
 if __name__ == '__main__':
     GPIO.setmode(GPIO.BOARD)
