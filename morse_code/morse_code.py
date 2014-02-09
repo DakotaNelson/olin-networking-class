@@ -182,7 +182,7 @@ def sendMassage(macto,message):
     packet = packetize(macto, message)
     for char in packet:
         transmitQueue.put_nowait(char)
-    
+
 def packetize(macto,msg):
     packet = macto+ourMac+changeBase(len(msg))+msg
     return packet+changeBase(checksum(packet))+'+'
