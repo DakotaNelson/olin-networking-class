@@ -133,7 +133,7 @@ def printMsg(packet):
     #for i in range(6,length):
     #    nice += msgBuffer[i]
     nice += ''.join(msgBuffer[6:-3]) + '|'
-    if checksum(msgBuffer[0:-3]) == msgBuffer[-3]+msgBuffer[-2]:
+    if changeBase(checksum(msgBuffer[0:-3]),36) == msgBuffer[-3]+msgBuffer[-2]:
         nice += 'GOOD'
     else:
         nice += 'BAD'
