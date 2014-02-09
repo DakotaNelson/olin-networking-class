@@ -112,6 +112,7 @@ def translate():
         #print(msgBuffer)
         printMsg(msgBuffer)
         msgBuffer = []
+        return
     firstTransmit = True
     if len(msgBuffer) < 2:
         pass
@@ -123,7 +124,6 @@ def translate():
             transmitQueue.put_nowait(msgBuffer[0])
             firstTransmit=False
         transmitQueue.put_nowait(char)
-    #print(char)
 
 def printMsg(packet):
     nice = msgBuffer[0] + msgBuffer[1] + '|' # TO:
