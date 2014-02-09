@@ -113,13 +113,20 @@ def translate():
 
     char = morse_to_letter[char]
     msgBuffer.append(char)
-    if char == '+':
+    if char == '+': # and (msgBuffer[0] + msgBuffer[1]) == ourMac:
         print(msgBuffer)
         msgBuffer = []
-    if len(msgBuffer) == 2 and (msgBuffer[0] + msgBuffer[1]) == ourMac:
+    firstTransmit = True
+    if len(msgBuffer) < 2:
+        pass
+    elif len(msgBuffer) >= 2 and (msgBuffer[0] + msgBuffer[1]) == ourMac:
         print("to us!")
+    else:
+        if firstTransmit:
+            transmitQueue.put_nowait(msgBuffer[0])
+            firstTransmit=False
+        transmitQueue.put_nowait(char)
     print(char)
-    #transmitQueue.put_nowait(char)
 
 def dotOrDash(edge):
     tolerance = 0.3
@@ -167,7 +174,7 @@ def blinkMessage(message):
 def blinkWorker():
     while True:
         message = transmitQueue.get()
-        if not word is None:
+        if not message is None:
             blinkMessage(message)
             transmitQueue.task_done()
 
