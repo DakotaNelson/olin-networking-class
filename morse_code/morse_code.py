@@ -22,7 +22,7 @@ def changeBase(x,base):
           y= chr(getChar(x/base))+chr(getChar(x%base))+y
       else:
           y=chr(getChar(x/base))+'0'+y
-          x/=base
+      x/=base
     return y
 
 def getChar(x):
@@ -78,13 +78,6 @@ def waveCallback(channel):
         #channel is low
         fallingCallback(channel)
 
-#def sleepms(t): # lets you specify sleep in ms and also doesn't lock up
-#    ##TODO: actually use this function
-#    start = time()
-#    while time() - start < (t/1000):
-#        pass
-#    return
-
 def findWords():
     startWait = time()
     while True:
@@ -116,6 +109,8 @@ def translate():
     if char == '+': # and (msgBuffer[0] + msgBuffer[1]) == ourMac:
         #print(msgBuffer)
         printMsg(msgBuffer)
+        if checksum(msgBuffer[0:-3]==msgBuffer[-3]+msgBuffer[-2]:
+                print 'data intact'
         msgBuffer = []
     firstTransmit = True
     if len(msgBuffer) < 2:
@@ -192,6 +187,7 @@ def blinkWorker():
 
 def sendMassage(macto,message):
     packet = packetize(macto, message)
+    print packet
     for char in packet:
         transmitQueue.put_nowait(char)
 
