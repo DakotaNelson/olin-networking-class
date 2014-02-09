@@ -130,12 +130,12 @@ def printMsg(packet):
     #length = int(msgBuffer[4] + msgBuffer[5]) # Length of message
     #for i in range(6,length):
     #    nice += msgBuffer[i]
-    msg += msgBuffer[6:-3] + '|'
+    nice += msgBuffer[6:-3] + '|'
     if checksum(msgBuffer[0:-3]) == msgBuffer[-3]+msgBuffer[-2]:
-        msg += 'GOOD'
+        nice += 'GOOD'
     else:
-        msg += 'BAD'
-    print(msg)
+        nice += 'BAD'
+    print(nice)
 
 def dotOrDash(edge):
     tolerance = 0.3
@@ -192,6 +192,7 @@ def sendMassage(macto,message):
     #print packet
     for char in packet:
         transmitQueue.put_nowait(char)
+    print("Sending message!")
 
 def packetize(macto,msg):
     packet = macto+ourMac+changeBase(len(msg),36)+msg
