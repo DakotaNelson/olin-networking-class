@@ -178,9 +178,20 @@ def blinkWorker():
             blinkMessage(message)
             transmitQueue.task_done()
 
-def packetize(macto,macfrom,msg):
-    packet = macto+macfrom+changeBase(len(msg))+msg
-    return packet+checksum(packet)
+def sendMassage(macto,message):
+    packet = packetize(macto, message)
+    for char in packet:
+        transmitQueue.put_nowait(char)
+    
+def packetize(macto,msg):
+    packet = macto+ourMac+changeBase(len(msg))+msg
+    return packet+changeBase(checksum(packet))+'+'
+
+def checksum(msg):
+    cksm=0
+    for char in msg:
+        cksm^=ord(char)
+    return cksum
 
 if __name__ == '__main__':
     GPIO.setmode(GPIO.BOARD)
