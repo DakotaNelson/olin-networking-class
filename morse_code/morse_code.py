@@ -184,8 +184,8 @@ def sendMassage(macto,message):
         transmitQueue.put_nowait(char)
 
 def packetize(macto,msg):
-    packet = macto+ourMac+changeBase(len(msg))+msg
-    return packet+changeBase(checksum(packet))+'+'
+    packet = macto+ourMac+changeBase(len(msg),36)+msg
+    return packet+changeBase(checksum(packet),36)+'+'
 
 def checksum(msg):
     cksm=0
