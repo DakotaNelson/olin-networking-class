@@ -111,13 +111,14 @@ def translate():
         if result is not None:
             char += result
 
+    char = morse_to_letter[char]
     msgBuffer.append(char)
     if char == '+':
         print(msgBuffer)
         msgBuffer = []
     if len(msgBuffer) == 2 and (msgBuffer[0] + msgBuffer[1]) == ourMac:
         print("to us!")
-    print(morse_to_letter[char])
+    print(char)
     #transmitQueue.put_nowait(char)
 
 def dotOrDash(edge):
