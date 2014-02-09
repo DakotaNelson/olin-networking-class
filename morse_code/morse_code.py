@@ -17,12 +17,14 @@ ourMac = ''
 
 def changeBase(x,base):
     y = ''
-    while x/base != 0:
+    lessThanBase = x < base
+    while x/base != 0 or lessThanBase:
       if(x%base!=0):
           y= chr(getChar(x/base))+chr(getChar(x%base))+y
       else:
           y=chr(getChar(x/base))+'0'+y
       x/=base
+      lessThanBase = False
     return y
 
 def getChar(x):
