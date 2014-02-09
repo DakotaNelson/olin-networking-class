@@ -109,7 +109,7 @@ def translate():
     if char == '+': # and (msgBuffer[0] + msgBuffer[1]) == ourMac:
         #print(msgBuffer)
         printMsg(msgBuffer)
-        if checksum(msgBuffer[0:-3]==msgBuffer[-3]+msgBuffer[-2]:
+        if checksum(msgBuffer[0:-3]) == msgBuffer[-3]+msgBuffer[-2]:
                 print 'data intact'
         msgBuffer = []
     firstTransmit = True
