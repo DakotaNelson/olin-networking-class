@@ -109,8 +109,6 @@ def translate():
     if char == '+': # and (msgBuffer[0] + msgBuffer[1]) == ourMac:
         #print(msgBuffer)
         printMsg(msgBuffer)
-        if checksum(msgBuffer[0:-3]) == msgBuffer[-3]+msgBuffer[-2]:
-                print 'data intact'
         msgBuffer = []
     firstTransmit = True
     if len(msgBuffer) < 2:
@@ -129,10 +127,14 @@ def printMsg(packet):
     nice = msgBuffer[0] + msgBuffer[1] + '|' # TO:
     nice += msgBuffer[2] + msgBuffer[3] + '|' # FROM:
     nice += msgBuffer[4] + msgBuffer[5] + '|' # LENGTH
-    length = int(msgBuffer[4] + msgBuffer[5]) # Length of message
-    for i in range(6,length):
-        nice += msgBuffer[i]
-    msg += '|'
+    #length = int(msgBuffer[4] + msgBuffer[5]) # Length of message
+    #for i in range(6,length):
+    #    nice += msgBuffer[i]
+    msg += msgBuffer[6:-3] + '|'
+    if checksum(msgBuffer[0:-3]) == msgBuffer[-3]+msgBuffer[-2]:
+        msg += 'GOOD'
+    else:
+        msg += 'BAD'
     print(msg)
 
 def dotOrDash(edge):
@@ -187,7 +189,7 @@ def blinkWorker():
 
 def sendMassage(macto,message):
     packet = packetize(macto, message)
-    print packet
+    #print packet
     for char in packet:
         transmitQueue.put_nowait(char)
 
