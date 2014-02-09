@@ -191,7 +191,7 @@ def checksum(msg):
     cksm=0
     for char in msg:
         cksm^=ord(char)
-    return cksum
+    return cksm
 
 if __name__ == '__main__':
     GPIO.setmode(GPIO.BOARD)
