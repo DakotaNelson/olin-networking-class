@@ -132,7 +132,7 @@ def printMsg(packet):
     #length = int(msgBuffer[4] + msgBuffer[5]) # Length of message
     #for i in range(6,length):
     #    nice += msgBuffer[i]
-    nice += str(msgBuffer[6:-3]) + '|'
+    nice += ''.join(msgBuffer[6:-3]) + '|'
     if checksum(msgBuffer[0:-3]) == msgBuffer[-3]+msgBuffer[-2]:
         nice += 'GOOD'
     else:
@@ -191,7 +191,7 @@ def blinkWorker():
 
 def sendMassage(macto,message):
     packet = packetize(macto, message)
-    print packet
+    #print packet
     for char in packet:
         transmitQueue.put_nowait(char)
     print("Sending message!")
@@ -201,7 +201,7 @@ def packetize(macto,msg):
     return packet+changeBase(checksum(packet),36)+'+'
 
 def checksum(msg):
-    msg = str(msg)
+    msg = ''.join(msg)
     cksm=0
     for char in msg:
         cksm^=ord(char)
