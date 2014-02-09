@@ -130,7 +130,7 @@ def printMsg(packet):
     #length = int(msgBuffer[4] + msgBuffer[5]) # Length of message
     #for i in range(6,length):
     #    nice += msgBuffer[i]
-    nice += msgBuffer[6:-3] + '|'
+    nice += str(msgBuffer[6:-3]) + '|'
     if checksum(msgBuffer[0:-3]) == msgBuffer[-3]+msgBuffer[-2]:
         nice += 'GOOD'
     else:
