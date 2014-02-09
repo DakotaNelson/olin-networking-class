@@ -138,6 +138,7 @@ def printMsg(packet):
     else:
         nice += 'BAD'
     print(nice)
+    return
 
 def dotOrDash(edge):
     tolerance = 0.3
