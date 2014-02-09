@@ -205,7 +205,6 @@ def checksum(msg):
     cksm=0
     for char in msg:
         cksm^=ord(char)
-    print(cksm)
     return cksm
 
 if __name__ == '__main__':
