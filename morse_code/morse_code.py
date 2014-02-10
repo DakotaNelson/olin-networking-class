@@ -223,5 +223,5 @@ if __name__ == '__main__':
     transmitThread = Thread(target=blinkWorker)
     transmitThread.daemon = True
     transmitThread.start()
-    ourMac = changeBase(input('Enter unique MAC address between 0 and 1296: ')) 
+    ourMac = 'AA'#changeBase(input('Enter unique MAC address between 0 and 1296: '))
     #we should probably do a GPIO.cleanup() in here somewhere.
