@@ -98,7 +98,7 @@ def translate():
         edges.append(morseQueue.get())
     if len(edges) == 0:
         return # no waveforms to translate
-    tolerance = .3
+    tolerance = (.3*transmit_speed)/1000
     char = ''
 
     for edge in edges:
@@ -107,6 +107,7 @@ def translate():
             char += result
 
     char = morse_to_letter[char]
+    print(char)
     msgBuffer.append(char)
     if char == '+': # and (msgBuffer[0] + msgBuffer[1]) == ourMac:
         #print(msgBuffer)
