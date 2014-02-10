@@ -8,7 +8,7 @@ in_pin = 11
 out_pin = 7
 pin_high = False
 
-transmit_speed = 500 # speed of one clock cycle, in ms
+transmit_speed = 100 # speed of one clock cycle, in ms
 
 morseQueue = Queue.Queue()
 transmitQueue = Queue.Queue()
@@ -107,7 +107,7 @@ def translate():
             char += result
 
     char = morse_to_letter[char]
-    #print(char)
+    print(char)
     msgBuffer.append(char)
     if char == '+': # and (msgBuffer[0] + msgBuffer[1]) == ourMac:
         #print(msgBuffer)
@@ -181,11 +181,7 @@ def blinkMessage(message):
             else:
                 dash(transmit_speed)
             if i == len(c)-1:
-                print('sleeping 2')
-                print((2.*transmit_speed)/1000)
                 sleep((2.*transmit_speed)/1000) # gap between characters
-    print('sleeping 4')
-    print((4.*transmit_speed)/1000)
     sleep((4.*transmit_speed)/1000) # plus 3 above = 7 -> between words
 
 def blinkWorker():
