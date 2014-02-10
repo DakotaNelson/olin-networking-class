@@ -107,7 +107,7 @@ def translate():
             char += result
 
     char = morse_to_letter[char]
-    print(char)
+    #print(char)
     msgBuffer.append(char)
     if char == '+': # and (msgBuffer[0] + msgBuffer[1]) == ourMac:
         #print(msgBuffer)
@@ -210,6 +210,7 @@ def checksum(msg):
     return cksm
 
 if __name__ == '__main__':
+    GPIO.cleanup()
     GPIO.setmode(GPIO.BOARD)
 
     GPIO.setup(out_pin,GPIO.OUT)
