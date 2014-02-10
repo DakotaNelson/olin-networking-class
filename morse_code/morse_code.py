@@ -86,7 +86,7 @@ def findWords():
         while pin_high:
             startWait = time()
         while not pin_high:
-            if (time()-startWait >= ((3*transmit_speed)/1000)-.1) and not morseQueue.empty(): translate()
+            if (time()-startWait >= ((3.*transmit_speed)/1000)-.1) and not morseQueue.empty(): translate()
 
 def translate():
     letter_to_morse = {"+":".-.-.","A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
@@ -142,9 +142,9 @@ def printMsg(packet):
     return
 
 def dotOrDash(edge):
-    tolerance = 0.3
-    tDot = (transmit_speed)/1000
-    tDash = (3*transmit_speed)/1000
+    tolerance = (.3*transmit_speed)/1000
+    tDot = (transmit_speed)/1000.
+    tDash = (3.*transmit_speed)/1000
     tStart = edge[0]
     tDuration = edge[1]
     #tPrevStart = edges[i-1][0]
@@ -181,8 +181,8 @@ def blinkMessage(message):
             else:
                 dash(transmit_speed)
             if i == len(c)-1:
-                sleep((2*transmit_speed)/1000) # gap between characters
-    sleep((4*transmit_speed)/1000) # plus 3 above = 7 -> between words
+                sleep((2.*transmit_speed)/1000) # gap between characters
+    sleep((4.*transmit_speed)/1000) # plus 3 above = 7 -> between words
 
 def blinkWorker():
     while True:
