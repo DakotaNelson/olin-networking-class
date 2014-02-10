@@ -72,7 +72,7 @@ def fallingCallback(channel):
     edgeList = []
 
 def waveCallback(channel):
-    #sleep(.01) # debounce a little
+    sleep(.05) # debounce a little
     if GPIO.input(channel):
         #channel is high
         risingCallback(channel)
