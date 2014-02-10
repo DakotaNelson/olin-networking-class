@@ -17,12 +17,14 @@ ourMac = ''
 
 def changeBase(x,base):
     y = ''
-    while x/base != 0:
+    lessThanBase = x < base
+    while x/base != 0 or lessThanBase:
       if(x%base!=0):
           y= chr(getChar(x/base))+chr(getChar(x%base))+y
       else:
           y=chr(getChar(x/base))+'0'+y
       x/=base
+      lessThanBase = False
     return y
 
 def getChar(x):
@@ -107,21 +109,36 @@ def translate():
     char = morse_to_letter[char]
     msgBuffer.append(char)
     if char == '+': # and (msgBuffer[0] + msgBuffer[1]) == ourMac:
-        print(msgBuffer)
-        if checksum(msgBuffer[0:-3]==msgBuffer[-3]+msgBuffer[-2]:
-                print 'data intact'
+        #print(msgBuffer)
+        printMsg(msgBuffer)
         msgBuffer = []
+        return
     firstTransmit = True
     if len(msgBuffer) < 2:
         pass
     elif len(msgBuffer) >= 2 and (msgBuffer[0] + msgBuffer[1]) == ourMac:
-        print("to us!")
+        #print("to us!")
+        pass
     else:
         if firstTransmit:
             transmitQueue.put_nowait(msgBuffer[0])
             firstTransmit=False
         transmitQueue.put_nowait(char)
-    print(char)
+
+def printMsg(packet):
+    nice = msgBuffer[0] + msgBuffer[1] + '|' # TO:
+    nice += msgBuffer[2] + msgBuffer[3] + '|' # FROM:
+    nice += msgBuffer[4] + msgBuffer[5] + '|' # LENGTH
+    #length = int(msgBuffer[4] + msgBuffer[5]) # Length of message
+    #for i in range(6,length):
+    #    nice += msgBuffer[i]
+    nice += ''.join(msgBuffer[6:-3]) + '|'
+    if changeBase(checksum(msgBuffer[0:-3]),36) == msgBuffer[-3]+msgBuffer[-2]:
+        nice += 'GOOD'
+    else:
+        nice += 'BAD'
+    print(nice)
+    return
 
 def dotOrDash(edge):
     tolerance = 0.3
@@ -175,15 +192,17 @@ def blinkWorker():
 
 def sendMassage(macto,message):
     packet = packetize(macto, message)
-    print packet
+    #print packet
     for char in packet:
         transmitQueue.put_nowait(char)
+    print("Sending message!")
 
 def packetize(macto,msg):
     packet = macto+ourMac+changeBase(len(msg),36)+msg
     return packet+changeBase(checksum(packet),36)+'+'
 
 def checksum(msg):
+    msg = ''.join(msg)
     cksm=0
     for char in msg:
         cksm^=ord(char)
