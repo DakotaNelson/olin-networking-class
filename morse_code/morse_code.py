@@ -38,21 +38,21 @@ def off(): GPIO.output(out_pin,False)
 def blink(n=5,t=1000):
     for i in range(n):
         on()
-        sleep(t/1000)
+        sleep(t/1000.)
         off()
-        sleep(t/1000)
+        sleep(t/1000.)
 
 def dot(t):
     on()
-    sleep(t/1000) # locking this thread probably won't hurt anything (I think)
+    sleep(t/1000.) # locking this thread probably won't hurt anything (I think)
     off()
-    sleep(t/1000)
+    sleep(t/1000.)
 
 def dash(t):
     on()
-    sleep((t*3)/1000)
+    sleep((t*3)/1000.)
     off()
-    sleep(t/1000)
+    sleep(t/1000.)
 
 def risingCallback(channel):
     global pin_high
@@ -181,7 +181,11 @@ def blinkMessage(message):
             else:
                 dash(transmit_speed)
             if i == len(c)-1:
+                print('sleeping 2')
+                print((2.*transmit_speed)/1000)
                 sleep((2.*transmit_speed)/1000) # gap between characters
+    print('sleeping 4')
+    print((4.*transmit_speed)/1000)
     sleep((4.*transmit_speed)/1000) # plus 3 above = 7 -> between words
 
 def blinkWorker():
