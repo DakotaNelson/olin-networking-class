@@ -12,6 +12,17 @@ transmit_speed = 1000 # speed of one clock cycle, in ms
 
 morseQueue = Queue.Queue()
 transmitQueue = Queue.Queue()
+def changeBase(x,base):
+	y = ''
+	while x/base != 0:
+		if(x%base!=0):y= chr(getChar(x/base))+chr(getChar(x%base))+y
+		else:y=chr(getChar(x/base))+'0'+y
+		x/=base
+	return y
+
+def getChar(x):
+	if x < 10: return x+48
+	else: return x+55
 
 def on(): GPIO.output(out_pin,True)
 
