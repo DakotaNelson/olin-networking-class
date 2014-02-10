@@ -72,7 +72,7 @@ def fallingCallback(channel):
     edgeList = []
 
 def waveCallback(channel):
-    sleep(.01) # debounce a little
+    #sleep(.01) # debounce a little
     if GPIO.input(channel):
         #channel is high
         risingCallback(channel)
@@ -182,7 +182,7 @@ def blinkMessage(message):
                 dash(transmit_speed)
             if i == len(c)-1:
                 sleep((2.*transmit_speed)/1000) # gap between characters
-    sleep((4.*transmit_speed)/1000) # plus 3 above = 7 -> between words
+    #sleep((4.*transmit_speed)/1000) # plus 3 above = 7 -> between words
 
 def blinkWorker():
     while True:
