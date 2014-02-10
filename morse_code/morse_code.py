@@ -8,7 +8,7 @@ in_pin = 11
 out_pin = 7
 pin_high = False
 
-transmit_speed = 1000 # speed of one clock cycle, in ms
+transmit_speed = 500 # speed of one clock cycle, in ms
 
 morseQueue = Queue.Queue()
 transmitQueue = Queue.Queue()
