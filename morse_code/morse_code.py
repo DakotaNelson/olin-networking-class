@@ -210,20 +210,23 @@ def checksum(msg):
     return cksm
 
 if __name__ == '__main__':
-    GPIO.cleanup()
-    GPIO.setmode(GPIO.BOARD)
+    try:
+        GPIO.setmode(GPIO.BOARD)
 
-    GPIO.setup(out_pin,GPIO.OUT)
-    GPIO.setup(in_pin,GPIO.IN)
+        GPIO.setup(out_pin,GPIO.OUT)
+        GPIO.setup(in_pin,GPIO.IN)
 
-    GPIO.add_event_detect(in_pin, GPIO.BOTH, callback=waveCallback)
+        GPIO.add_event_detect(in_pin, GPIO.BOTH, callback=waveCallback)
 
-    recieveThread = Thread(target=findWords)
-    recieveThread.daemon = True
-    recieveThread.start()
+        recieveThread = Thread(target=findWords)
+        recieveThread.daemon = True
+        recieveThread.start()
 
-    transmitThread = Thread(target=blinkWorker)
-    transmitThread.daemon = True
-    transmitThread.start()
-    ourMac = 'AA'#changeBase(input('Enter unique MAC address between 0 and 1296: '))
-    #we should probably do a GPIO.cleanup() in here somewhere.
+        transmitThread = Thread(target=blinkWorker)
+        transmitThread.daemon = True
+        transmitThread.start()
+        ourMac = 'AA'#changeBase(input('Enter unique MAC address between 0 and 1296: '))
+        #we should probably do a GPIO.cleanup() in here somewhere.
+
+    finally:
+        GPIO.cleanup()
