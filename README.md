@@ -9,7 +9,8 @@ an LED and photoresistor.
 |Chatroom user list updates| Kyle
 |Chatroom message echo| Ben
 |Eliminate ghost packets| Ezra
-|Other IRC commands| Dakota, Others
+|MSG| Dakota
+|Users| Dakota
 
 
 ####Chatroom User List
@@ -21,5 +22,8 @@ Be able to update the user list whenever a user joins or leaves a room, so the s
 ####Chatroom Message Echo
 Whenever the server recieves a message for a certain room, forward that message on to be displayed by every user in that room. When a user sends a message, it is sent to everyone in every room that user is in.
 
-####Other IRC Commands
-Implement some of the other IRC commands found [here](http://www.ircbeginner.com/ircinfo/ircc-commands.html). Private messaging is priority one, followed by whatever else looks good.
+####MSG
+Implement private messaging.
+
+####Users
+Allows users to query who is currently in a room.
