@@ -16,13 +16,13 @@ class UDP_Server(object):
             except:
                 return None
 ######################################################################
-    def recieveData(self,IP,port):
+    def recieveData(self):
         socket, AF_INET, SOCK_DGRAM, timeout = CN_Sockets.socket, CN_Sockets.AF_INET, CN_Sockets.SOCK_DGRAM, CN_Sockets.timeout
         with socket(AF_INET, SOCK_DGRAM) as sock:
-            sock.bind((IP,port))
+            sock.bind((self.ip,self.port))
             sock.settimeout(2.0) # 2 second timeout
 
-            print ("UDP Server started on IP Address {}, port{}".format(IP,port,))
+            print ("UDP Server started on IP Address {}, port{}".format(self.ip,self.port,))
 
             while True:
                 try:
@@ -39,7 +39,9 @@ class UDP_Server(object):
                     continue
 #######################################################################
     def __init__(self,IP="127.0.0.1",port=5280):
+        self.port = port
+        self.ip = IP
         self.packetQueue = queue.Queue()
-        recieveThread = Thread(target=UDP_Server.recieveData,args=(IP,port))
+        recieveThread = Thread(target=UDP_Server.recieveData,args=[self])
         recieveThread.start()
 
