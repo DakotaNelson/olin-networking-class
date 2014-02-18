@@ -26,6 +26,10 @@ Be able to update the user list whenever a user joins or leaves a room, so the s
 ####Chatroom Message Echo
 Whenever the server recieves a message for a certain room, forward that message on to be displayed by every user in that room. When a user sends a message, it is sent to everyone in every room that user is in.
 
+TO-DO:
+Listening thread for client to receive message packets.
+Tweak echoMessages to only echo within the room that the message was sent in, rather than every room.
+
 ####MSG
 Implement private messaging.
 
