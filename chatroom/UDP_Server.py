@@ -44,12 +44,12 @@ class UDP_Server(object):
             bytearray_message = bytearray(message,encoding="UTF-8")
             bytes_sent = sock.sendto(bytearray_message, destination)
             print ("{} bytes sent".format(bytes_sent))
-            
+
 #######################################################################
     def __init__(self,IP="127.0.0.1",port=5280):
         self.port = port
         self.ip = IP
         self.packetQueue = queue.Queue()
-        recieveThread = Thread(target=UDP_Server.recieveData,args=[self])
+        recieveThread = Thread(target=self.recieveData)
         recieveThread.start()
 
