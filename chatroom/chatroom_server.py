@@ -10,3 +10,8 @@ while True:
     # see UDP_Server.py
 
     # here: update users, echo/route messages to correct users, etc.
+
+def echoMessages(userList,incMsg):
+    for room in userList:
+        for userNum in userList[room]:
+            serv.sendMessage(userList[room[userNum[1]]],userList[room[userNum[2]]],incMsg)

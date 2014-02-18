@@ -115,26 +115,35 @@ def translate():
         msgBuffer = []
         return
     firstTransmit = True
-    if len(msgBuffer) < 2:
+    if len(msgBuffer) < 4:
         pass
-    elif len(msgBuffer) >= 2 and (msgBuffer[0] + msgBuffer[1]) == ourMac:
+    elif len(msgBuffer) >=4 and (msgBuffer[2] + msgBuffer[3]) == ourMac:
         #print("to us!")
+        pass
+    elif msgBuffer[0]=='0' or msgBuffer[1]=='0':
         pass
     else:
         if firstTransmit:
+            ghostInt = int(msgBuffer[0])-1
+            ghostInt2 = int(msgBuffer[1])-1
+            if ghostInt != ghostInt2:
+                ghostInt=ghostInt2=min([ghostInt,ghostInt2])
+            msgBuffer[0]=msgBuffer[1]=ghostInt
             transmitQueue.put_nowait(msgBuffer[0])
+            transmitQueue.put_nowait(msgBuffer[1])
+            transmitQueue.put_nowait(msgBuffer[2])
             firstTransmit=False
         transmitQueue.put_nowait(char)
 
 def printMsg(packet):
-    nice = msgBuffer[0] + msgBuffer[1] + '|' # TO:
-    nice += msgBuffer[2] + msgBuffer[3] + '|' # FROM:
-    nice += msgBuffer[4] + msgBuffer[5] + '|' # LENGTH
+    nice = msgBuffer[2] + msgBuffer[3] + '|' # TO:
+    nice += msgBuffer[4] + msgBuffer[5] + '|' # FROM:
+    nice += msgBuffer[5] + msgBuffer[6] + '|' # LENGTH
     #length = int(msgBuffer[4] + msgBuffer[5]) # Length of message
     #for i in range(6,length):
     #    nice += msgBuffer[i]
     nice += ''.join(msgBuffer[6:-3]) + '|'
-    if changeBase(checksum(msgBuffer[0:-3]),36) == msgBuffer[-3]+msgBuffer[-2]:
+    if changeBase(checksum(msgBuffer[2:-3]),36) == msgBuffer[-3]+msgBuffer[-2]:
         nice += 'GOOD'
     else:
         nice += 'BAD'
@@ -200,7 +209,7 @@ def sendMassage(macto,message):
 
 def packetize(macto,msg):
     packet = macto+ourMac+changeBase(len(msg),36)+msg
-    return packet+changeBase(checksum(packet),36)+'+'
+    return '99'+packet+changeBase(checksum(packet),36)+'+'
 
 def checksum(msg):
     msg = ''.join(msg)
