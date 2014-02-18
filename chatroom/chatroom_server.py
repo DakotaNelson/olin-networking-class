@@ -18,15 +18,14 @@ while True:
         for users in room:
           if current_message[0] in users:
             # sender is in chatroom room
-            echoMessages(room, users)
+            echoMessages(users, current_message[2][0])
           else:
             # sender not in chatroom, no need to retransmit
             pass
 
-def echoMessages(userList,incMsg):
-    for room in userList:
-        for userNum in userList[room]:
-            serv.sendMessage(userList[room[userNum[1]]],userList[room[userNum[2]]],incMsg)
+def echoMessages(users,incMsg):
+    for userNum in users:
+        serv.sendMessage(users[userNum[1]],users[userNum[2]],incMsg)
 
 def detRoom(msg):
     for room in rooms.keys:
