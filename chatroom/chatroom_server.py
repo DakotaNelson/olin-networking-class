@@ -8,33 +8,67 @@ while True:
     # packet will be in the form [source_IP,source_port,msg]
     # returnData(wait,timeout=None)
     # update users, echo/route messages to correct users, etc.
+    source_ip = current_message[0]
+    source_port = current_message[1]
+    msg = current_message[2]
+    room = detRoom(current_message)
+    room_name = room[0]
+    user_name = room[1]
 
-    if (current_message[2][0] =='\\'):
-    # message contains special command, do not retransmit.
-        messageSplit = current_message[2].split(' ')
-        if '\\join' in current_message[2]:
-            if messageSplit[0]=='\\join' and messageSplit[1] != None:
-                if messageSplit[2] == None:
-                    messageSplit.append(current_message[0])
-                if messageSplit[1] in rooms.keys:
-                    rooms[messageSplit[1]].append([messageSplit[2],current_message[0],current_message[1])
-                else:
-                    rooms[messageSplit[1]]=[messageSplit[2],current_message[0],current_message[1]]
-            else: serv.sendMessage(current_message[0],current_message[1],'malformed join attempt')
-        if '\\leave' in message[2]:
-            if messageSplit[0]=='\\leave' and messageSplit[1] != None:
-                if room=detRoom(current_message)!=False:
-                    rooms[room] = [x for x in rooms[room] if x[1]!=current_message[0] and x[2]!=current_message[1]]
-                else: serv.sendMessage(current_message[0],current_message[1],'invalid room')
-            else: serv.sendMessage(current_message[0],current_message[1],'no room')
-      # need to parse special command here
-    else:
-        if room=detRoom(current_message)!=False:
-            for user in rooms[room[0]]:
-                serv.sendMessage(user[1],user[2],room[1]+':'+current_message[2])
+    if (msg[0] =='\\'): # This is a command message.
+        # message contains special command, do not retransmit.
+        messageSplit = msg.split(' ')
+
+        command = messageSplit[0] # we can assume there's at least one character, therefore this is safe
+
+        try:
+            arg1 = messageSplit[1]
+        except:
+            serv.sendMessage(source_ip,source_port,"Error: malformed command.")
+            continue # Break out to the top of our while loop.
+
+        try:
+            arg2 = messageSplit[2]
+        except:
+            serv.sendMessage(source_ip,source_port,"Error: malformed command.")
+            arg2 = source_ip
+
+        if command =='\\join'
+            joinRoom(arg1,arg2,source_ip,source_port) # join the new room
+            if room != False:
+                leaveRoom(room_name,user_name) # leave the old room, if any
+
+        if command=='\\leave'
+            if room != False:
+                rooms[room_name] = [user for user in rooms[room] if user[1]!=source_ip and user[2]!=source_port]
+            else:
+                serv.sendMessage(source_ip,source_port,'Error: Not in a room.')
+
+        if command == '\\room'
+            room = detRoom(current_message)
+            if room != False:
+                serv.sendMessage(source_ip,source_port,'You are currently in '+room_name+'.')
+
+    else: # A regular, non-command message.
+        if room != False:
+            for user in rooms[room_name]:
+                serv.sendMessage(user[1],user[2],user_name+': '+msg)
+        else:
+            serv.sendMessage(source_ip,source_port,"Error: you are not in any rooms.")
+
+########################################################################################
 def detRoom(msg):
     for room in rooms.keys:
         for user in rooms[room]:
             if user[2] == msg[1] and user[3] == msg[2]:
                 return [room, user[0]]
     return False
+########################################################################################
+def joinRoom(room,user,ip,port):
+    if room in rooms.keys:
+        rooms[room].append([user,ip,port])
+    else:
+        rooms[room] = [user,ip,port]
+########################################################################################
+def leaveRoom(room,user):
+    pass
