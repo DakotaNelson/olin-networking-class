@@ -1,9 +1,18 @@
 import CN_Sockets # CN_Sockets adds ability to interrupt "while True" loop with ctl-C
+import queue
 
 class UDP_Client(object):
     """ Computer Networks Chapter 4: Sockets.  UDP Client example. """
 
+    def returnData(self):
+        try:
+            return messageQueue.get_nowait()
+        except:
+            return None
+
     def __init__(self,Server_Address=("127.0.0.1",5280)):
+
+        messageQueue = queue.Queue()
 
         socket, AF_INET, SOCK_DGRAM = CN_Sockets.socket, CN_Sockets.AF_INET, CN_Sockets.SOCK_DGRAM
 

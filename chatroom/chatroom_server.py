@@ -7,8 +7,9 @@ while True:
     serv.returnData(False) #this will return one packet from the server
     # packet will be in the form [source_IP,source_port,msg]
     # returnData(wait,timeout=None)
-    # update users, echo/route messages to correct users, etc.    
-    
+    # see UDP_Server.py
+
+    # here: update users, echo/route messages to correct users, etc.
 
 def detRoom(msg):
     for room in rooms.keys:
