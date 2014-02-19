@@ -3,14 +3,13 @@ import queue
 from threading import Thread
 
 class UDP_Client(object):
-    """ Computer Networks Chapter 4: Sockets.  UDP Client example. """
-
+######################################################################
     def returnData(self):
         try:
             return messageQueue.get_nowait()
         except:
             return None
-####################################################################
+######################################################################
     def recieveData(self):
         socket, AF_INET, SOCK_DGRAM, timeout = CN_Sockets.socket, CN_Sockets.AF_INET, CN_Sockets.SOCK_DGRAM, CN_Sockets.timeout
         with socket(AF_INET, SOCK_DGRAM) as sock:
@@ -32,7 +31,7 @@ class UDP_Client(object):
                 except timeout:
                     #print (".",end="",flush=True)
                     continue
-########################################################################
+######################################################################
     def __init__(self,Server_Address=("127.0.0.1",5280)):
 
         self.messageQueue = queue.Queue()
