@@ -1,10 +1,9 @@
 from socket import *
 
 class CN_Socket(socket):
-"""\
-CN_Socket subclasses standard Python 3 socket class
-to add support for keyboard interrupt (ctl-C)
-"""
+
+#CN_Socket subclasses standard Python 3 socket class
+#to add support for keyboard interrupt (ctl-C)
 
     def __exit__(self,argException,argString,argTraceback):
 

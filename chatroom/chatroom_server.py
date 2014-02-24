@@ -70,10 +70,10 @@ def joinRoom(room,user,ip,port):
     print("User joined a room!")
 ########################################################################################
 def leaveRoom(room,user):
-        if room in rooms.keys() 
-            rooms[room_name] = [user for user in rooms[room] if user[0]!=user]
-        else:
-            serv.sendMessage(source_ip,source_port,'Error: Not in a room.')
+    if room in rooms.keys():
+        rooms[room_name] = [user for user in rooms[room] if user[0]!=user]
+    else:
+        serv.sendMessage(source_ip,source_port,'Error: Not in a room.')
 ########################################################################################
 while True:
     current_message = serv.returnData(False) #this will return one packet from server
