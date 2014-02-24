@@ -38,6 +38,7 @@ class UDP_Server(object):
                 except timeout:
                     print (".",end="",flush=True)
                     continue
+                if self.killall: self.recieveThread.exit()
 
 ######################################################################
     def sendMessage(self,ip,port,message):
@@ -51,6 +52,9 @@ class UDP_Server(object):
         self.port = port
         self.ip = IP
         self.packetQueue = queue.Queue()
-        recieveThread = Thread(target=self.recieveData)
-        recieveThread.start()
+        self.recieveThread = Thread(target=self.recieveData)
+        self.recieveThread.start()
+        self.killall = False
 
+    def __exit__(self,argException,argString,argTraceback):
+        self.killall = True
