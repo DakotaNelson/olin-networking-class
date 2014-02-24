@@ -3,17 +3,17 @@ import UDP_Server as Server
 serv = Server.UDP_Server() # using default ip 127.0.0.1 and port 5280
 rooms = {}
 
-while True:
-    current_message = serv.returnData(False) #this will return one packet from server
-    # packet will be in the form [source_IP,source_port,msg]
-    # returnData(wait,timeout=None)
-    # update users, echo/route messages to correct users, etc.
+########################################################################################
+def parseMessage(current_message):
     source_ip = current_message[0]
     source_port = current_message[1]
     msg = current_message[2]
     room = detRoom(current_message)
-    room_name = room[0]
-    user_name = room[1]
+    if room is not False:
+        room_name = room[0]
+        user_name = room[1]
+    else:
+        room_name = user_name = False
 
     if (msg[0] =='\\'): # This is a command message.
         # message contains special command, do not retransmit.
@@ -25,7 +25,7 @@ while True:
             arg1 = messageSplit[1]
         except:
             serv.sendMessage(source_ip,source_port,"Error: malformed command.")
-            continue # Break out to the top of our while loop.
+            return # Break out to the top of our while loop.
 
         try:
             arg2 = messageSplit[2]
@@ -33,19 +33,18 @@ while True:
             serv.sendMessage(source_ip,source_port,"Error: malformed command.")
             arg2 = source_ip
 
-        if command =='\\join'
+        if command =='\\join':
             joinRoom(arg1,arg2,source_ip,source_port) # join the new room
             if room != False:
                 leaveRoom(room_name,user_name) # leave the old room, if any
 
-        if command=='\\leave'
+        if command=='\\leave':
             if room != False:
                 rooms[room_name] = [user for user in rooms[room] if user[1]!=source_ip and user[2]!=source_port]
             else:
                 serv.sendMessage(source_ip,source_port,'Error: Not in a room.')
 
-        if command == '\\room'
-            room = detRoom(current_message)
+        if command == '\\room':
             if room != False:
                 serv.sendMessage(source_ip,source_port,'You are currently in '+room_name+'.')
 
@@ -58,8 +57,8 @@ while True:
 
 ########################################################################################
 def detRoom(msg):
-    for room in rooms.keys:
-        for user in rooms[room]:
+    for key in rooms:
+        for user in rooms[key]:
             if user[2] == msg[1] and user[3] == msg[2]:
                 return [room, user[0]]
     return False
@@ -69,6 +68,15 @@ def joinRoom(room,user,ip,port):
         rooms[room].append([user,ip,port])
     else:
         rooms[room] = [user,ip,port]
+    print("User joined a room!")
 ########################################################################################
 def leaveRoom(room,user):
     pass
+########################################################################################
+while True:
+    current_message = serv.returnData(False) #this will return one packet from server
+    # packet will be in the form [source_IP,source_port,msg]
+    # returnData(wait,timeout=None)
+    # update users, echo/route messages to correct users, etc.
+    if current_message is not None:
+        parseMessage(current_message)

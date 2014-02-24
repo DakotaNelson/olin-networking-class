@@ -22,7 +22,7 @@ class UDP_Server(object):
             sock.bind((self.ip,self.port))
             sock.settimeout(2.0) # 2 second timeout
 
-            print ("UDP Server started on IP Address {}, port{}".format(self.ip,self.port,))
+            print ("UDP Server started on IP Address {}, port {}".format(self.ip,self.port,))
 
             while True:
                 try:
@@ -35,7 +35,7 @@ class UDP_Server(object):
                     self.packetQueue.put_nowait([source_IP,source_port,bytearray_msg.decode("UTF-8")])
 
                 except timeout:
-                    #print (".",end="",flush=True)
+                    print (".",end="",flush=True)
                     continue
 
 ######################################################################
