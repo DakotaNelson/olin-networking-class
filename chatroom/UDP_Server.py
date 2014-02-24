@@ -21,6 +21,7 @@ class UDP_Server(object):
         with socket(AF_INET, SOCK_DGRAM) as sock:
             sock.bind((self.ip,self.port))
             sock.settimeout(2.0) # 2 second timeout
+            self.socket = sock
 
             print ("UDP Server started on IP Address {}, port {}".format(self.ip,self.port,))
 
@@ -39,10 +40,10 @@ class UDP_Server(object):
                     continue
 
 ######################################################################
-    def sendMessage(ip,port,message):
+    def sendMessage(self,ip,port,message):
             destination=(ip,port)
             bytearray_message = bytearray(message,encoding="UTF-8")
-            bytes_sent = sock.sendto(bytearray_message, destination)
+            bytes_sent = self.socket.sendto(bytearray_message, destination)
             print ("{} bytes sent".format(bytes_sent))
 
 #######################################################################
