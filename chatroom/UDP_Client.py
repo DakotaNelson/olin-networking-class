@@ -14,7 +14,7 @@ class UDP_Client(object):
     def recieveData(self):
         socket, AF_INET, SOCK_DGRAM, timeout = CN_Sockets.socket, CN_Sockets.AF_INET, CN_Sockets.SOCK_DGRAM, CN_Sockets.timeout
         with socket(AF_INET, SOCK_DGRAM) as sock:
-            sock.bind((self.ip,self.port))
+            #sock.bind((self.ip,self.port))
             sock.settimeout(2.0) # 2 second timeout
 
             print ("UDP Client listening on IP Address {}, port {}".format(self.ip,self.port,))
