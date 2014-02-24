@@ -58,3 +58,4 @@ class UDP_Server(object):
 
     def __exit__(self,argException,argString,argTraceback):
         self.killall = True
+        print("exiting")
