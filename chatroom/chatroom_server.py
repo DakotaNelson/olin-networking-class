@@ -1,8 +1,7 @@
 import UDP_Server as Server
-
+import sys, signal
 serv = Server.UDP_Server() # using default ip 127.0.0.1 and port 5280
 rooms = {}
-
 ########################################################################################
 def parseMessage(current_message):
     source_ip = current_message[0]
@@ -75,10 +74,12 @@ def leaveRoom(room,user):
     else:
         serv.sendMessage(source_ip,source_port,'Error: Not in a room.')
 ########################################################################################
-while True:
+
+while not serv.killReciever:
     current_message = serv.returnData(False) #this will return one packet from server
     # packet will be in the form [source_IP,source_port,msg]
     # returnData(wait,timeout=None)
     # update users, echo/route messages to correct users, etc.
     if current_message is not None:
         parseMessage(current_message)
+

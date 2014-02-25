@@ -1,6 +1,7 @@
 import CN_Sockets
 import queue
 from threading import Thread
+import signal, sys
 
 class UDP_Server(object):
 ######################################################################
@@ -25,7 +26,7 @@ class UDP_Server(object):
 
             print ("UDP Server started on IP Address {}, port {}".format(self.ip,self.port,))
 
-            while True:
+            while not self.killReciever:
                 try:
                     bytearray_msg, address = sock.recvfrom(1024)
                     source_IP, source_port = address
@@ -38,10 +39,8 @@ class UDP_Server(object):
                 except timeout:
                     print (".",end="",flush=True)
                     continue
-                if self.killall: 
-                    print ('kilt')
-                    self.recieveThread.exit()
-
+        sys.exit()
+        return
 ######################################################################
     def sendMessage(self,ip,port,message):
             destination=(ip,port)
@@ -50,14 +49,19 @@ class UDP_Server(object):
             print ("{} bytes sent".format(bytes_sent))
 
 #######################################################################
+    def signal_handler(self,signal,frame):
+        print ('exiting')
+        self.killReciever = True
+        raise SystemExit
+
     def __init__(self,IP="127.0.0.1",port=5280):
         self.port = port
         self.ip = IP
         self.packetQueue = queue.Queue()
         self.recieveThread = Thread(target=self.recieveData)
         self.recieveThread.start()
-        self.killall = False
-
+        self.killReciever = False
+        signal.signal(signal.SIGINT, self.signal_handler) 
+        
     def __exit__(self,argException,argString,argTraceback):
-        self.killall = True
         print("exiting")
