@@ -38,7 +38,9 @@ class UDP_Server(object):
                 except timeout:
                     print (".",end="",flush=True)
                     continue
-                if self.killall: self.recieveThread.exit()
+                if self.killall: 
+                    print ('kilt')
+                    self.recieveThread.exit()
 
 ######################################################################
     def sendMessage(self,ip,port,message):
