@@ -48,10 +48,9 @@ def parseMessage(current_message):
 
         if command =='\\message':
             if room != False:
-                if arg1 in rooms[room_name]:
-                    serv.sendMessage(arg1[1], arg2[2], user_name+'(Private): '+msg)    
-                else:
-                    serv.sendMessage(source_ip,source_port,"Error: User not in room.")
+                for user in rooms[room_name]:
+                    if arg1 == user[0]:
+                        serv.sendMessage(user[1], user[2], user_name+'(Private): '+msg)    
             else:
                 serv.sendMessage(source_ip,source_port,"Error: Not in a room.")
 
