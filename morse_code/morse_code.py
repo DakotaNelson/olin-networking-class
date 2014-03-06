@@ -218,8 +218,10 @@ class morseNet:
             cksm^=ord(char)
         return cksm
 
-    def __init__(self):
+    def __init__(self,inpin=11,outpin=7):
         try:
+            self.in_pin=inpin
+            self.out_pin=outpin
             GPIO.setmode(GPIO.BOARD)
 
             GPIO.setup(self.out_pin,GPIO.OUT)
@@ -236,6 +238,5 @@ class morseNet:
             transmitThread.start()
             self.ourMac = 'AA'#changeBase(input('Enter unique MAC address between 0 and 1296: '))
             #we should probably do a GPIO.cleanup() in here somewhere.
-
         finally:
             GPIO.cleanup()
