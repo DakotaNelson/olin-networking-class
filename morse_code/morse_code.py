@@ -110,7 +110,6 @@ def translate():
     print(char)
     msgBuffer.append(char)
     if char == '+': # and (msgBuffer[0] + msgBuffer[1]) == ourMac:
-        #print(msgBuffer)
         printMsg(msgBuffer)
         msgBuffer = []
         return
