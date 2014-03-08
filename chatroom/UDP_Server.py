@@ -61,7 +61,7 @@ class UDP_Server(object):
         self.recieveThread = Thread(target=self.recieveData)
         self.recieveThread.start()
         self.killReciever = False
-        signal.signal(signal.SIGINT, self.signal_handler) 
-        
+        signal.signal(signal.SIGINT, self.signal_handler)
+
     def __exit__(self,argException,argString,argTraceback):
         print("exiting")
