@@ -265,4 +265,3 @@ class morseNet:
             self.transmitThread.start()
 
             self.ourMac = 'AA'
-            #changeBase(input('Enter unique MAC address between 0 and 1296: '))
