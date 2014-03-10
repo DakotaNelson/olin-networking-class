@@ -3,17 +3,6 @@ from threading import Thread
 import RPi.GPIO as GPIO
 from time import sleep, time
 class morseNet:
-    edgeList = []
-    in_pin = 11
-    out_pin = 7
-    pin_high = False
-
-    transmit_speed = 100 # speed of one clock cycle, in ms
-
-    morseQueue = Queue.Queue()
-    transmitQueue = Queue.Queue()
-    msgBuffer = []
-    ourMac = ''
 
     def changeBase(self,x,base):
         y = ''
@@ -30,6 +19,17 @@ class morseNet:
     def getChar(self,x):
       if x < 10: return x+48
       else: return x+55
+    
+    def reverseBase(self,x,base)
+        powers = range(len(x))[::-1]
+        val = 0
+        for i in range(len(x)):
+            val += getCharReverse(x[i])*base**powers[i]
+        return val 
+    
+    def getCharReverse(self,x):
+        if ord(x)< 58: return ord(x)-48
+        else: return ord(x)-55 
 
     def on(self): GPIO.output(self.out_pin,True)
 
@@ -109,18 +109,21 @@ class morseNet:
         char = morse_to_letter[char]
         print(char)
         self.msgBuffer.append(char)
-        if char == '+': # and (self.msgBuffer[0] + msgBuffer[1]) == self.ourMac:
+        if len(self.msgBuffer)==8:
+            self.recvLen = reverseBase(self.msgBuffer[6]+self.msgBuffer[7])
+        if len(self.msgBuffer)==self.recvLen+8: 
             #print(self.msgBuffer)
             printMsg(self.msgBuffer)
             self.msgBuffer = []
+            self.recvLen = 0
             return
         firstTransmit = True
         if len(self.msgBuffer) < 4:
             pass
-        elif len(self.msgBuffer) >=4 and (msgBuffer[2] + msgBuffer[3]) == self.ourMac:
+        elif len(self.msgBuffer) >=4 and (self.msgBuffer[2] + self.msgBuffer[3]) == self.ourMac:
             #print("to us!")
             pass
-        elif self.msgBuffer[0]=='0' or msgBuffer[1]=='0':
+        elif self.msgBuffer[0]=='0' or self.msgBuffer[1]=='0':
             pass
         else:
             if firstTransmit:
@@ -209,7 +212,7 @@ class morseNet:
 
     def packetize(self,macto,msg):
         packet = macto+self.ourMac+changeBase(len(msg),36)+msg
-        return '99'+packet+changeBase(checksum(packet),36)+'+'
+        return '99'+packet+changeBase(checksum(packet),36)
 
     def checksum(self,msg):
         msg = ''.join(msg)
@@ -222,6 +225,15 @@ class morseNet:
         try:
             self.in_pin=inpin
             self.out_pin=outpin
+            self.edgeList = []
+            self.pin_high = False
+
+            self.transmit_speed = 100 # speed of one clock cycle, in ms
+            self.recvLen = 0
+            self.morseQueue = Queue.Queue()
+            self.transmitQueue = Queue.Queue()
+            self.msgBuffer = []
+            self.ourMac = ''
             GPIO.setmode(GPIO.BOARD)
 
             GPIO.setup(self.out_pin,GPIO.OUT)
