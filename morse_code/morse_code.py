@@ -206,8 +206,8 @@ class morseNet:
         print("Sending message!")
 
     def packetize(self,macto,msg):
-        packet = macto+self.ourMac+changeBase(len(msg),36)+msg
-        return '99'+packet+changeBase(checksum(packet),36)
+        packet = macto+self.ourMac+self.changeBase(len(msg),36)+msg
+        return '99'+packet+self.changeBase(self.checksum(packet),36)
 
     def checksum(self,msg):
         msg = ''.join(msg)
