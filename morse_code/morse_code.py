@@ -105,7 +105,7 @@ class morseNet:
         try:
             char = self.morse_to_letter[char]
         except KeyError:
-            break
+            return
 
         print(char)
         self.msgBuffer.append(char)
