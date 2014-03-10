@@ -24,7 +24,7 @@ class morseNet:
         powers = range(len(x))[::-1]
         val = 0
         for i in range(len(x)):
-            val += getCharReverse(x[i])*base**powers[i]
+            val += self.getCharReverse(x[i])*base**powers[i]
         return val
 
     def getCharReverse(self,x):
@@ -37,21 +37,21 @@ class morseNet:
 
     def blink(self,n=5,t=1000):
         for i in range(n):
-            on()
+            self.on()
             sleep(t/1000.)
-            off()
+            self.off()
             sleep(t/1000.)
 
     def dot(self,t):
-        on()
+        self.on()
         sleep(t/1000.) # locking this thread probably won't hurt anything (I think)
-        off()
+        self.off()
         sleep(t/1000.)
 
     def dash(self,t):
-        on()
+        self.on()
         sleep((t*3)/1000.)
-        off()
+        self.off()
         sleep(t/1000.)
 
     def risingCallback(self,channel):
@@ -72,10 +72,10 @@ class morseNet:
         sleep(.02) # debounce a little
         if GPIO.input(channel):
             #channel is high
-            risingCallback(channel)
+            self.risingCallback(channel)
         else:
             #channel is low
-            fallingCallback(channel)
+            self.fallingCallback(channel)
 
     def findWords(self):
         startWait = time()
@@ -83,7 +83,7 @@ class morseNet:
             while self.pin_high:
                 startWait = time()
             while not self.pin_high:
-                if (time()-startWait >= ((3.*self.transmit_speed)/1000)-.1) and not self.morseQueue.empty(): translate()
+                if (time()-startWait >= ((3.*self.transmit_speed)/1000)-.1) and not self.morseQueue.empty(): self.translate()
 
     def translate(self):
         #letter_to_morse = {"\":"----..","+":".-.-.","A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
@@ -98,7 +98,7 @@ class morseNet:
         char = ''
 
         for edge in edges:
-            result = dotOrDash(edge)
+            result = self.dotOrDash(edge)
             if result is not None:
                 char += result
 
@@ -106,7 +106,7 @@ class morseNet:
         print(char)
         self.msgBuffer.append(char)
         if len(self.msgBuffer)==8:
-            self.recvLen = reverseBase(self.msgBuffer[6]+self.msgBuffer[7])
+            self.recvLen = self.reverseBase(self.msgBuffer[6]+self.msgBuffer[7])
         if len(self.msgBuffer)==self.recvLen+8:
             #print(self.msgBuffer)
             #printMsg(self.msgBuffer)
@@ -136,9 +136,9 @@ class morseNet:
             self.transmitQueue.put_nowait(char)
 
     def printMsg(self,packet):
-        nice = self.msgBuffer[2] + msgBuffer[3] + '|' # TO:
-        nice += self.msgBuffer[4] + msgBuffer[5] + '|' # FROM:
-        nice += self.msgBuffer[5] + msgBuffer[6] + '|' # LENGTH
+        nice = self.msgBuffer[2] + self.msgBuffer[3] + '|' # TO:
+        nice += self.msgBuffer[4] + self.msgBuffer[5] + '|' # FROM:
+        nice += self.msgBuffer[5] + self.msgBuffer[6] + '|' # LENGTH
         #length = int(self.msgBuffer[4] + msgBuffer[5]) # Length of message
         #for i in range(6,length):
         #    nice += self.msgBuffer[i]
@@ -176,7 +176,7 @@ class morseNet:
         return message
 
     def blinkMessage(self,message):
-        morse = toMorse(message)
+        morse = self.toMorse(message)
         for c in morse:
             for i in range(len(c)):
                 if c[i] == ".":
@@ -191,11 +191,11 @@ class morseNet:
         while True:
             message = self.transmitQueue.get()
             if not message is None:
-                blinkMessage(message)
+                self.blinkMessage(message)
                 self.transmitQueue.task_done()
 
     def sendMassage(self,macto,message):
-        packet = packetize(macto, message)
+        packet = self.packetize(macto, message)
         #print packet
         for char in packet:
             self.transmitQueue.put_nowait(char)
@@ -254,15 +254,15 @@ class morseNet:
             GPIO.setup(self.out_pin,GPIO.OUT)
             GPIO.setup(self.in_pin,GPIO.IN)
 
-            GPIO.add_event_detect(self.in_pin, GPIO.BOTH, callback=waveCallback)
+            GPIO.add_event_detect(self.in_pin, GPIO.BOTH, callback=self.waveCallback)
 
-            recieveThread = Thread(target=findWords)
-            recieveThread.daemon = True
-            recieveThread.start()
+            self.recieveThread = Thread(target=self.findWords)
+            self.recieveThread.daemon = True
+            self.recieveThread.start()
 
-            transmitThread = Thread(target=blinkWorker)
-            transmitThread.daemon = True
-            transmitThread.start()
+            self.transmitThread = Thread(target=self.blinkWorker)
+            self.transmitThread.daemon = True
+            self.transmitThread.start()
 
             self.ourMac = 'AA'
             #changeBase(input('Enter unique MAC address between 0 and 1296: '))
