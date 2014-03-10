@@ -102,7 +102,11 @@ class morseNet:
             if result is not None:
                 char += result
 
-        char = self.morse_to_letter[char]
+        try:
+            char = self.morse_to_letter[char]
+        except KeyError:
+            break
+
         print(char)
         self.msgBuffer.append(char)
         if len(self.msgBuffer)==8:
