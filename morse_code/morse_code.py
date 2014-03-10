@@ -20,7 +20,7 @@ class morseNet:
       if x < 10: return x+48
       else: return x+55
 
-    def reverseBase(self,x,base)
+    def reverseBase(self,x,base):
         powers = range(len(x))[::-1]
         val = 0
         for i in range(len(x)):
