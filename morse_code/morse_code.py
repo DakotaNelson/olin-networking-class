@@ -253,6 +253,8 @@ class morseNet:
             GPIO.setmode(GPIO.BOARD)
             GPIO.setup(self.out_pin,GPIO.OUT)
             GPIO.setup(self.in_pin,GPIO.IN)
+            print(self.out_pin)
+            print(self.in_pin)
 
             GPIO.add_event_detect(self.in_pin, GPIO.BOTH, callback=self.waveCallback)
 
