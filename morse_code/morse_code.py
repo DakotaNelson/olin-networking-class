@@ -269,5 +269,5 @@ class morseNet:
             self.ourMac = 'AA'
             #changeBase(input('Enter unique MAC address between 0 and 1296: '))
 
-        finally:
-            GPIO.cleanup()
+        #finally:
+            #GPIO.cleanup()
