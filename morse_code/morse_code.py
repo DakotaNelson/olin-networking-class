@@ -253,8 +253,6 @@ class morseNet:
             GPIO.setmode(GPIO.BOARD)
             GPIO.setup(self.out_pin,GPIO.OUT)
             GPIO.setup(self.in_pin,GPIO.IN)
-            print(self.out_pin)
-            print(self.in_pin)
 
             GPIO.add_event_detect(self.in_pin, GPIO.BOTH, callback=self.waveCallback)
 
@@ -268,6 +266,3 @@ class morseNet:
 
             self.ourMac = 'AA'
             #changeBase(input('Enter unique MAC address between 0 and 1296: '))
-
-        #finally:
-            #GPIO.cleanup()
