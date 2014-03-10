@@ -265,3 +265,7 @@ class morseNet:
             self.transmitThread.start()
 
             self.ourMac = 'AA'
+
+        except:
+            print("something went horribly awry")
+
