@@ -180,7 +180,8 @@ class morseNet:
         for c in morse:
             for i in range(len(c)):
                 if c[i] == ".":
-                    dot(self.transmit_speed)                else:
+                    dot(self.transmit_speed)
+                else:
                     dash(self.transmit_speed)
                 if i == len(c)-1:
                     sleep((2.*self.transmit_speed)/1000) # gap between characters
