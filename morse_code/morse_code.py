@@ -79,6 +79,7 @@ class morseNet:
 
     def findWords(self):
         startWait = time()
+	print('findWords')
         while True:
             while self.pin_high:
                 startWait = time()
@@ -96,24 +97,25 @@ class morseNet:
             return # no waveforms to translate
         tolerance = (.3*self.transmit_speed)/1000
         char = ''
-
+	print(edges)
         for edge in edges:
             result = self.dotOrDash(edge)
             if result is not None:
                 char += result
-
         try:
             char = self.morse_to_letter[char]
         except KeyError:
+	    print('derp')
             return
 
         print(char)
         self.msgBuffer.append(char)
         if len(self.msgBuffer)==8:
             self.recvLen = self.reverseBase(self.msgBuffer[6]+self.msgBuffer[7])
+	print(self.recvLen)
         if len(self.msgBuffer)==self.recvLen+8:
             #print(self.msgBuffer)
-            #printMsg(self.msgBuffer)
+            self.printMsg(self.msgBuffer)
             self.msgBuffer = []
             self.recvLen = 0
             self.passUpQueue.put_nowait(self.msgBuffer)
@@ -132,7 +134,7 @@ class morseNet:
                 ghostInt2 = int(self.msgBuffer[1])-1
                 if ghostInt != ghostInt2:
                     ghostInt=ghostInt2=min([ghostInt,ghostInt2])
-                self.msgBuffer[0]=msgBuffer[1]=ghostInt
+                self.msgBuffer[0]=self.msgBuffer[1]=ghostInt
                 self.transmitQueue.put_nowait(self.msgBuffer[0])
                 self.transmitQueue.put_nowait(self.msgBuffer[1])
                 self.transmitQueue.put_nowait(self.msgBuffer[2])
@@ -143,11 +145,11 @@ class morseNet:
         nice = self.msgBuffer[2] + self.msgBuffer[3] + '|' # TO:
         nice += self.msgBuffer[4] + self.msgBuffer[5] + '|' # FROM:
         nice += self.msgBuffer[5] + self.msgBuffer[6] + '|' # LENGTH
-        #length = int(self.msgBuffer[4] + msgBuffer[5]) # Length of message
+        #length = int(self.msgBuffer[4] + self.msgBuffer[5]) # Length of message
         #for i in range(6,length):
         #    nice += self.msgBuffer[i]
         nice += ''.join(self.msgBuffer[6:-3]) + '|'
-        if changeBase(checksum(self.msgBuffer[2:-3]),36) == msgBuffer[-3]+msgBuffer[-2]:
+        if self.changeBase(checksum(self.msgBuffer[2:-3]),36) == self.msgBuffer[-3]+self.msgBuffer[-2]:
             nice += 'GOOD'
         else:
             nice += 'BAD'
@@ -184,9 +186,9 @@ class morseNet:
         for c in morse:
             for i in range(len(c)):
                 if c[i] == ".":
-                    dot(self.transmit_speed)
+                    self.dot(self.transmit_speed)
                 else:
-                    dash(self.transmit_speed)
+                    self.dash(self.transmit_speed)
                 if i == len(c)-1:
                     sleep((2.*self.transmit_speed)/1000) # gap between characters
         #sleep((4.*self.transmit_speed)/1000) # plus 3 above = 7 -> between words
