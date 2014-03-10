@@ -64,7 +64,7 @@ class morseNet:
         if len(self.edgeList) == 0:
             return # there's no matching rise for this fall
         if self.edgeList[-1][1] != 0: print('wat')
-        self.edgeList[-1][1] = time()-edgeList[-1][0]
+        self.edgeList[-1][1] = time()-self.edgeList[-1][0]
         self.morseQueue.put_nowait(self.edgeList[-1])
         self.edgeList = []
 
