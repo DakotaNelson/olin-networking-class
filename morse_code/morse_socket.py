@@ -1,9 +1,12 @@
 class morse_socket:
+    # constants for people to use because numbers are hard
+    self.AF_INET = 2
+    self.SOCK_DGRAM = 2
 
-    def __init__(self):
-        # constants for people to use because numbers are hard
-        self.AF_INET = 2
-        self.SOCK_DGRAM = 2
+    def __init__(self,family,dtype):
+        if family == 2 && dtype == 2:
+            import morse_code
+            self.network = morse_code.morseNet
         self.timeout = 2.0 # default
 
     def bind(self,address):
@@ -37,20 +40,13 @@ class morse_socket:
             print("Socket has not been initialized.")
             return False
         # call the morse code recieve function
-        msg = self.network.returnMessage(False) # false = nowait
-        # need to wait self.timeout seconds in the future
+        msg = self.network.returnMessage(True,self.timeout)
 
         # if msg is Null:
         #   except timeout
         address = msg[0]
         message = msg[1]
         return address,message
-
-    def socket(self,family,dtype):
-        if family == 2 && dtype == 2:
-            import morse_code
-            self.network = morse_code.morseNet
-        return self
 
     def settimeout(timeout):
         self.timeout = timeout
