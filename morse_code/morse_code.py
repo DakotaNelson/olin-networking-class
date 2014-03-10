@@ -55,15 +55,12 @@ class morseNet:
         sleep(t/1000.)
 
     def risingCallback(self,channel):
-        global self.pin_high
         self.pin_high = True
         if not GPIO.input(channel): print('wat')
         self.edgeList.append([time(),0])
 
     def fallingCallback(self, channel):
-        global self.pin_high
         self.pin_high = False
-        global self.edgeList
         if len(self.edgeList) == 0:
             return # there's no matching rise for this fall
         if self.edgeList[-1][1] != 0: print('wat')
@@ -93,7 +90,6 @@ class morseNet:
         #morse_to_letter = {v:k for (k,v) in letter_to_morse.items()}
         queueSize = 0
         edges = []
-        global self.msgBuffer
         while not self.morseQueue.empty():
             edges.append(self.morseQueue.get())
         if len(edges) == 0:
