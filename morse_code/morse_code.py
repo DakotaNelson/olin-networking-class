@@ -9,9 +9,9 @@ class morseNet:
         lessThanBase = x < base
         while x/base != 0 or lessThanBase:
           if(x%base!=0):
-              y= chr(getChar(x/base))+chr(getChar(x%base))+y
+              y= chr(self.getChar(x/base))+chr(self.getChar(x%base))+y
           else:
-              y=chr(getChar(x/base))+'0'+y
+              y=chr(self.getChar(x/base))+'0'+y
           x/=base
           lessThanBase = False
         return y
