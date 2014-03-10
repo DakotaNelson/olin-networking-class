@@ -19,17 +19,17 @@ class morseNet:
     def getChar(self,x):
       if x < 10: return x+48
       else: return x+55
-    
+
     def reverseBase(self,x,base)
         powers = range(len(x))[::-1]
         val = 0
         for i in range(len(x)):
             val += getCharReverse(x[i])*base**powers[i]
-        return val 
-    
+        return val
+
     def getCharReverse(self,x):
         if ord(x)< 58: return ord(x)-48
-        else: return ord(x)-55 
+        else: return ord(x)-55
 
     def on(self): GPIO.output(self.out_pin,True)
 
@@ -89,8 +89,8 @@ class morseNet:
                 if (time()-startWait >= ((3.*self.transmit_speed)/1000)-.1) and not self.morseQueue.empty(): translate()
 
     def translate(self):
-        letter_to_morse = {"+":".-.-.","A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
-        morse_to_letter = {v:k for (k,v) in letter_to_morse.items()}
+        #letter_to_morse = {"+":".-.-.","A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
+        #morse_to_letter = {v:k for (k,v) in letter_to_morse.items()}
         queueSize = 0
         edges = []
         global self.msgBuffer
@@ -106,12 +106,12 @@ class morseNet:
             if result is not None:
                 char += result
 
-        char = morse_to_letter[char]
+        char = self.morse_to_letter[char]
         print(char)
         self.msgBuffer.append(char)
         if len(self.msgBuffer)==8:
             self.recvLen = reverseBase(self.msgBuffer[6]+self.msgBuffer[7])
-        if len(self.msgBuffer)==self.recvLen+8: 
+        if len(self.msgBuffer)==self.recvLen+8:
             #print(self.msgBuffer)
             printMsg(self.msgBuffer)
             self.msgBuffer = []
@@ -170,18 +170,17 @@ class morseNet:
         else:
             return None
 
-    letter_to_morse = {"+":".-.-.","A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
-#This is currently only global for toMorse and toMessage
+    self.letter_to_morse = {"+":".-.-.","A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
 
-    morse_to_letter = {v:k for (k,v) in letter_to_morse.items()}
+    self.morse_to_letter = {v:k for (k,v) in self.letter_to_morse.items()}
 
 
     def toMorse(self,message):
-        morse = [letter_to_morse[c] for c in message]
+        morse = [self.letter_to_morse[c] for c in message]
         return morse
 
     def toMessage(self,morse):
-        message = [morse_to_letter[c] for c in morse]
+        message = [self.morse_to_letter[c] for c in morse]
         return message
 
     def blinkMessage(self,message):
@@ -234,8 +233,8 @@ class morseNet:
             self.transmitQueue = Queue.Queue()
             self.msgBuffer = []
             self.ourMac = ''
-            GPIO.setmode(GPIO.BOARD)
 
+            GPIO.setmode(GPIO.BOARD)
             GPIO.setup(self.out_pin,GPIO.OUT)
             GPIO.setup(self.in_pin,GPIO.IN)
 
@@ -248,7 +247,9 @@ class morseNet:
             transmitThread = Thread(target=blinkWorker)
             transmitThread.daemon = True
             transmitThread.start()
-            self.ourMac = 'AA'#changeBase(input('Enter unique MAC address between 0 and 1296: '))
-            #we should probably do a GPIO.cleanup() in here somewhere.
+
+            self.ourMac = 'AA'
+            #changeBase(input('Enter unique MAC address between 0 and 1296: '))
+
         finally:
             GPIO.cleanup()
