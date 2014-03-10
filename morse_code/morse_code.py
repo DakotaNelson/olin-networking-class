@@ -113,9 +113,10 @@ class morseNet:
             self.recvLen = reverseBase(self.msgBuffer[6]+self.msgBuffer[7])
         if len(self.msgBuffer)==self.recvLen+8: 
             #print(self.msgBuffer)
-            printMsg(self.msgBuffer)
+            #printMsg(self.msgBuffer)
             self.msgBuffer = []
             self.recvLen = 0
+            self.passUpQueue.put_nowait(self.msgBuffer)
             return
         firstTransmit = True
         if len(self.msgBuffer) < 4:
@@ -221,6 +222,25 @@ class morseNet:
             cksm^=ord(char)
         return cksm
 
+    def returnMessage(self,wait=False,timeout=None):
+        if wait:
+            try:
+                breakout = self.passUpQueue.get(True,timeout)
+                address = breakout[4] + breakout[5]
+                remainderMsg = ''.join(breakout[6:-3])
+                breakout()
+                return [address, remainderMsg]
+            except:
+                return None, None
+        else:
+            try:
+                breakout = self.passUpQueue.get_nowait()
+                address = breakout[4] + breakout[5]
+                remainderMsg = ''.join(breakout[6:-3])
+                return [address, remainderMsg]
+            except:
+                return None, None
+
     def __init__(self,inpin=11,outpin=7):
         try:
             self.in_pin=inpin
@@ -232,6 +252,7 @@ class morseNet:
             self.recvLen = 0
             self.morseQueue = Queue.Queue()
             self.transmitQueue = Queue.Queue()
+            self.passUpQueue = Queue.Queue()
             self.msgBuffer = []
             self.ourMac = ''
             GPIO.setmode(GPIO.BOARD)
