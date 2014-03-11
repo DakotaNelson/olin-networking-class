@@ -65,6 +65,7 @@ class morseNet:
             return # there's no matching rise for this fall
         if self.edgeList[-1][1] != 0: print('wat')
         self.edgeList[-1][1] = time()-self.edgeList[-1][0]
+        print(self.edgeList)
         self.morseQueue.put_nowait(self.edgeList[-1])
         self.edgeList = []
 
@@ -79,7 +80,7 @@ class morseNet:
 
     def findWords(self):
         startWait = time()
-	print('findWords')
+    print('findWords')
         while True:
             while self.pin_high:
                 startWait = time()
@@ -87,9 +88,6 @@ class morseNet:
                 if (time()-startWait >= ((3.*self.transmit_speed)/1000)-.1) and not self.morseQueue.empty(): self.translate()
 
     def translate(self):
-        #letter_to_morse = {"\":"----..","+":".-.-.","A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
-        #morse_to_letter = {v:k for (k,v) in letter_to_morse.items()}
-        queueSize = 0
         edges = []
         while not self.morseQueue.empty():
             edges.append(self.morseQueue.get())
@@ -97,22 +95,24 @@ class morseNet:
             return # no waveforms to translate
         tolerance = (.3*self.transmit_speed)/1000
         char = ''
-	print(edges)
+        print(edges)
         for edge in edges:
             result = self.dotOrDash(edge)
             if result is not None:
                 char += result
+            else:
+                print('ERROR: Waveform was not able to be identified.')
         try:
             char = self.morse_to_letter[char]
         except KeyError:
-	    print('derp')
+            print('ERROR: KeyError thrown in translation of waveforms')
             return
 
         print(char)
         self.msgBuffer.append(char)
         if len(self.msgBuffer)==8:
             self.recvLen = self.reverseBase(self.msgBuffer[6]+self.msgBuffer[7])
-	print(self.recvLen)
+    print(self.recvLen)
         if len(self.msgBuffer)==self.recvLen+8:
             #print(self.msgBuffer)
             self.printMsg(self.msgBuffer)
