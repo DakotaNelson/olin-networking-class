@@ -97,7 +97,7 @@ class morseNet:
             return # no waveforms to translate
         tolerance = (.3*self.transmit_speed)/1000
         char = ''
-        print(edges)
+        #print(edges)
         for edge in edges:
             result = self.dotOrDash(edge)
             if result is not None:
@@ -113,9 +113,9 @@ class morseNet:
         print(char)
         self.msgBuffer.append(char)
         if len(self.msgBuffer)==8:
-            self.recvLen = self.reverseBase(self.msgBuffer[6]+self.msgBuffer[7])
-    	print(self.recvLen)
-        if len(self.msgBuffer)==self.recvLen+8:
+            self.recvLen = self.reverseBase(self.msgBuffer[6]+self.msgBuffer[7],36)
+    	#print(self.recvLen)
+        if len(self.msgBuffer)==self.recvLen+10:
             #print(self.msgBuffer)
             self.printMsg(self.msgBuffer)
             self.msgBuffer = []
@@ -146,12 +146,12 @@ class morseNet:
     def printMsg(self,packet):
         nice = self.msgBuffer[2] + self.msgBuffer[3] + '|' # TO:
         nice += self.msgBuffer[4] + self.msgBuffer[5] + '|' # FROM:
-        nice += self.msgBuffer[5] + self.msgBuffer[6] + '|' # LENGTH
+        nice += self.msgBuffer[6] + self.msgBuffer[7] + '|' # LENGTH
         #length = int(self.msgBuffer[4] + self.msgBuffer[5]) # Length of message
         #for i in range(6,length):
         #    nice += self.msgBuffer[i]
-        nice += ''.join(self.msgBuffer[6:-3]) + '|'
-        if self.changeBase(checksum(self.msgBuffer[2:-3]),36) == self.msgBuffer[-3]+self.msgBuffer[-2]:
+        nice += ''.join(self.msgBuffer[8:-2]) + '|'
+        if self.changeBase(self.checksum(self.msgBuffer[2:-2]),36) == self.msgBuffer[-2]+self.msgBuffer[-1]:
             nice += 'GOOD'
         else:
             nice += 'BAD'
