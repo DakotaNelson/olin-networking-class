@@ -118,9 +118,9 @@ class morseNet:
         if len(self.msgBuffer)==self.recvLen+10:
             #print(self.msgBuffer)
             self.printMsg(self.msgBuffer)
+            self.passUpQueue.put_nowait(self.msgBuffer)
             self.msgBuffer = []
             self.recvLen = 0
-            self.passUpQueue.put_nowait(self.msgBuffer)
             return
         firstTransmit = True
         if len(self.msgBuffer) < 4:
@@ -224,9 +224,10 @@ class morseNet:
         if wait:
             try:
                 breakout = self.passUpQueue.get(True,timeout)
-                address = breakout[4] + breakout[5]
-                remainderMsg = ''.join(breakout[6:-3])
-                breakout()
+                print(breakout)
+                address = breakout[8:11] 
+                remainderMsg = ''.join(breakout[11:-2])
+                print(remainderMsg)
                 return [address, remainderMsg]
             except:
                 return None, None
@@ -250,7 +251,7 @@ class morseNet:
             self.edgeList = []
             self.pin_high = False
 
-            self.transmit_speed = 100 # speed of one clock cycle, in ms
+            self.transmit_speed = 200 # speed of one clock cycle, in ms
             self.recvLen = 0
             self.morseQueue = Queue.Queue()
             self.transmitQueue = Queue.Queue()

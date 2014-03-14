@@ -1,20 +1,20 @@
 class morse_socket:
     # constants for people to use because numbers are hard
-    self.AF_INET = 2
-    self.SOCK_DGRAM = 2
-    self.timeout = 2.0 # default
+    AF_INET = 2
+    SOCK_DGRAM = 2
+    timeout = 2.0 # default
 
     def __init__(self,family,dtype):
-        if family == 2 && dtype == 2:
+        if family == 2 and dtype == 2:
             import morse_code
-            self.network = morse_code.morseNet
+            self.network = morse_code.morseNet()
 
     def bind(self,address):
         self.myipaddr=address[0]
-        self.myport = address[1]
+        self.myport = int(address[1])
         return
 
-    def sendto(bytearray_msg,destination):
+    def sendto(self,bytearray_msg,destination):
         if not self.network:
             print("Socket has not been initialized.")
             return False
@@ -22,12 +22,12 @@ class morse_socket:
         toipaddr = destination[0]
         toport = destination[1]
         # ipaddr is in the form groupcode.mac
-        macto = self.toipaddr.split('.')[1]
-        groupto = self.toipaddr.split('.')[0] # this group's code is E
+        macto = toipaddr.split('.')[1]
+        groupto = toipaddr.split('.')[0] # this group's code is E
         # self.toport is the GPIO port of the receiving device/process
         # the protocol is "1" for now
         msg = bytearray_msg.decode("UTF-8") # don't actually want a bytearray
-        packet = groupto+macto+toport+self.myport+"1"+msg
+        packet = str(groupto)+str(macto)+str(toport)+str(self.myport)+"1"+msg
         self.network.sendMassage(macto,packet)
         # packet structure:
         # |GROUP CODE|MAC TO|GPIO TO|GPIO FROM|PROTOCOL|MSG|
@@ -42,7 +42,7 @@ class morse_socket:
         # call the morse code recieve function
         msg = self.network.returnMessage(True,self.timeout)
 
-        if msg is Null:
+        if msg is None:
             raise Exception('timeout')
 
         address = msg[0]
