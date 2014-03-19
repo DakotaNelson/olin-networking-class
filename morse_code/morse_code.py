@@ -65,7 +65,7 @@ class morseNet:
             return # there's no matching rise for this fall
         if self.edgeList[-1][1] != 0: print('wat')
         self.edgeList[-1][1] = time()-self.edgeList[-1][0]
-        print(self.edgeList)
+        #print(self.edgeList)
         self.morseQueue.put_nowait(self.edgeList[-1])
         self.edgeList = []
 
@@ -80,12 +80,14 @@ class morseNet:
 
     def findWords(self):
         startWait = time()
-    print('findWords')
+    	print('findWords')
         while True:
             while self.pin_high:
                 startWait = time()
             while not self.pin_high:
-                if (time()-startWait >= ((3.*self.transmit_speed)/1000)-.1) and not self.morseQueue.empty(): self.translate()
+		#print(self.transmit_speed)
+                if (time()-startWait >= ((3.*self.transmit_speed)/1000)-.1) and not self.morseQueue.empty():
+			self.translate()
 
     def translate(self):
         edges = []
@@ -95,7 +97,7 @@ class morseNet:
             return # no waveforms to translate
         tolerance = (.3*self.transmit_speed)/1000
         char = ''
-        print(edges)
+        #print(edges)
         for edge in edges:
             result = self.dotOrDash(edge)
             if result is not None:
@@ -111,14 +113,14 @@ class morseNet:
         print(char)
         self.msgBuffer.append(char)
         if len(self.msgBuffer)==8:
-            self.recvLen = self.reverseBase(self.msgBuffer[6]+self.msgBuffer[7])
-        print(self.recvLen)
-        if len(self.msgBuffer)==self.recvLen+8:
+            self.recvLen = self.reverseBase(self.msgBuffer[6]+self.msgBuffer[7],36)
+        #print(self.recvLen)
+        if len(self.msgBuffer)==self.recvLen+10:
             #print(self.msgBuffer)
             self.printMsg(self.msgBuffer)
+            self.passUpQueue.put_nowait(self.msgBuffer)
             self.msgBuffer = []
             self.recvLen = 0
-            self.passUpQueue.put_nowait(self.msgBuffer)
             return
         firstTransmit = True
         if len(self.msgBuffer) < 4:
@@ -144,12 +146,12 @@ class morseNet:
     def printMsg(self,packet):
         nice = self.msgBuffer[2] + self.msgBuffer[3] + '|' # TO:
         nice += self.msgBuffer[4] + self.msgBuffer[5] + '|' # FROM:
-        nice += self.msgBuffer[5] + self.msgBuffer[6] + '|' # LENGTH
+        nice += self.msgBuffer[6] + self.msgBuffer[7] + '|' # LENGTH
         #length = int(self.msgBuffer[4] + self.msgBuffer[5]) # Length of message
         #for i in range(6,length):
         #    nice += self.msgBuffer[i]
-        nice += ''.join(self.msgBuffer[6:-3]) + '|'
-        if self.changeBase(checksum(self.msgBuffer[2:-3]),36) == self.msgBuffer[-3]+self.msgBuffer[-2]:
+        nice += ''.join(self.msgBuffer[8:-2]) + '|'
+        if self.changeBase(self.checksum(self.msgBuffer[2:-2]),36) == self.msgBuffer[-2]+self.msgBuffer[-1]:
             nice += 'GOOD'
         else:
             nice += 'BAD'
@@ -222,8 +224,10 @@ class morseNet:
         if wait:
             try:
                 breakout = self.passUpQueue.get(True,timeout)
-                address = breakout[4] + breakout[5]
-                remainderMsg = ''.join(breakout[6:-3])
+                print(breakout)
+                address = breakout[8:11]
+                remainderMsg = ''.join(breakout[11:-2])
+                print(remainderMsg)
                 return [address, remainderMsg]
             except:
                 return None, None
@@ -247,7 +251,7 @@ class morseNet:
             self.edgeList = []
             self.pin_high = False
 
-            self.transmit_speed = 100 # speed of one clock cycle, in ms
+            self.transmit_speed = 200 # speed of one clock cycle, in ms
             self.recvLen = 0
             self.morseQueue = Queue.Queue()
             self.transmitQueue = Queue.Queue()
