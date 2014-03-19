@@ -26,6 +26,7 @@ class morse_socket:
         groupto = self.toipaddr.split('.')[0] # this group's code is E
         # self.toport is the GPIO port of the receiving device/process
         # the protocol is "1" for now
+        # TODO: "myipaddr" is currently never used. This is a problem.
         msg = bytearray_msg.decode("UTF-8") # don't actually want a bytearray
         packet = groupto+macto+toport+self.myport+"1"+msg
         self.network.sendMassage(macto,packet)
@@ -35,14 +36,14 @@ class morse_socket:
         # |TTL|TO|FROM|LEN|THIS PACKET|CKSUM|
         return packet
 
-    def recvfrom(self,buflen):
+    def recvfrom(self,buflen=0):
         if not self.network:
             print("Socket has not been initialized.")
             return False
         # call the morse code recieve function
         msg = self.network.returnMessage(True,self.timeout)
 
-        if msg is Null:
+        if msg is None:
             raise Exception('timeout')
 
         address = msg[0]

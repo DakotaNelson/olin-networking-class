@@ -112,7 +112,7 @@ class morseNet:
         self.msgBuffer.append(char)
         if len(self.msgBuffer)==8:
             self.recvLen = self.reverseBase(self.msgBuffer[6]+self.msgBuffer[7])
-    print(self.recvLen)
+        print(self.recvLen)
         if len(self.msgBuffer)==self.recvLen+8:
             #print(self.msgBuffer)
             self.printMsg(self.msgBuffer)
@@ -224,7 +224,6 @@ class morseNet:
                 breakout = self.passUpQueue.get(True,timeout)
                 address = breakout[4] + breakout[5]
                 remainderMsg = ''.join(breakout[6:-3])
-                breakout()
                 return [address, remainderMsg]
             except:
                 return None, None
