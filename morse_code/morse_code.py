@@ -86,7 +86,7 @@ class morseNet:
                 startWait = time()
             while not self.pin_high:
 		#print(self.transmit_speed)
-                if (time()-startWait >= ((3.*self.transmit_speed)/1000)-.1) and not self.morseQueue.empty(): 
+                if (time()-startWait >= ((3.*self.transmit_speed)/1000)-.1) and not self.morseQueue.empty():
 			self.translate()
 
     def translate(self):
@@ -114,7 +114,7 @@ class morseNet:
         self.msgBuffer.append(char)
         if len(self.msgBuffer)==8:
             self.recvLen = self.reverseBase(self.msgBuffer[6]+self.msgBuffer[7],36)
-    	#print(self.recvLen)
+        #print(self.recvLen)
         if len(self.msgBuffer)==self.recvLen+10:
             #print(self.msgBuffer)
             self.printMsg(self.msgBuffer)
@@ -224,7 +224,7 @@ class morseNet:
             try:
                 breakout = self.passUpQueue.get(True,timeout)
                 print(breakout)
-                address = breakout[8:11] 
+                address = breakout[8:11]
                 remainderMsg = ''.join(breakout[11:-2])
                 print(remainderMsg)
                 return [address, remainderMsg]

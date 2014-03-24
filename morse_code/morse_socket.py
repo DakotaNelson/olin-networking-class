@@ -26,16 +26,17 @@ class morse_socket:
         groupto = toipaddr.split('.')[0] # this group's code is E
         # self.toport is the GPIO port of the receiving device/process
         # the protocol is "1" for now
+        # TODO: "myipaddr" is currently never used. This is probably an issue
         msg = bytearray_msg.decode("UTF-8") # don't actually want a bytearray
         packet = str(groupto)+str(macto)+str(toport)+str(self.myport)+"1"+msg
         self.network.sendMassage(macto,packet)
         # packet structure:
         # |GROUP CODE|MAC TO|GPIO TO|GPIO FROM|PROTOCOL|MSG|
         # which is then encapsulated by morse_code into
-        # |TTL|TO|FROM|LEN|THIS PACKET|CKSUM|
+        # |TTL|MAC TO|MAC FROM|LEN|THIS PACKET|CKSUM|
         return packet
 
-    def recvfrom(self,buflen):
+    def recvfrom(self,buflen=0):
         if not self.network:
             print("Socket has not been initialized.")
             return False
