@@ -156,7 +156,6 @@ class morseNet:
         else:
             nice += 'BAD'
         print(nice)
-        return
 
     def dotOrDash(self,edge):
         tolerance = (.3*self.transmit_speed)/1000
