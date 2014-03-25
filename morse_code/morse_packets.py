@@ -59,7 +59,7 @@ class IP_Packet:
 
             return str(self.ttl)+str(self.destination)+str(self.source)+str(self.length)+str(self.data)+str(self.cksum)
 
-    def writeIn(self,packet):
+    def parse(self,packet):
         # take a text packet and parse it into this object
         # also do error checking
 
@@ -69,15 +69,58 @@ class UDP_Packet:
         # Source address.
         self.destination = None
         # Destination address.
-        self.protocol = None
-        # Indicates the next level protocol.
+        self.length = None
+        # Indicates the length of the datagram including header and data.
+        self.cksum = None
+        # Checksum of the datagram.
         self.data = None
         # Packet's payload.
 
-    def writeOut(self):
+    def changeBase(self,x,base):
+        y = ''
+        lessThanBase = x < base
+        while x/base != 0 or lessThanBase:
+          if(x%base!=0):
+              y= chr(self.getChar(x/base))+chr(self.getChar(x%base))+y
+          else:
+              y=chr(self.getChar(x/base))+'0'+y
+          x/=base
+          lessThanBase = False
+        return y
+
+    def getChar(self,x):
+      if x < 10: return x+48
+      else: return x+55
+
+    def writeOut(self,protocol="internet"):
         # write all the data fields into a long string suitable for transmission
         # also do error checking
+        allports = [3,5,7,8,10,11,12,13,15,16,18,19,21,22,23,24,26]
+        # allports is a list of all RasPi GPIO ports (board v2)
+        if protocol == "morse":
+            if self.source is None or not self.source in allports:
+                print("Source port is invalid.")
+                return None
+            if self.destination is None or not self.destination in allports:
+                print("Destination port is invalid.")
+                return None
+            if self.data is None:
+                print("No data in this packet.")
+                return None
 
-    def writeIn(self,packet):
+            sourceBase36 = self.changeBase(self.destination,36)
+            destinationBase36 = self.changeBase(self.source,36)
+
+            return str(destinationBase36) + str(sourceBase36) + str(self.data)
+
+        elif protocol == "internet":
+            #TODO
+            pass
+
+        else:
+            print("ERROR: unrecognized protocol.")
+            return None
+
+    def parse(self,packet,protocol):
         # take a packet, parse it into this object
         # also error check
