@@ -7,11 +7,16 @@ class morse_socket:
     def __init__(self,family,dtype):
         if family == 2 and dtype == 2:
             import morse_code
-            self.network = morse_code.morseNet()
+            outpin = 11
+            inpin = 7
+            self.network = morse_code.morseNet(inpin,outpin,address)
+            self.myipaddr = address
+            self.myport = int(outpin)
 
     def bind(self,address):
-        self.myipaddr=address[0]
+        self.myipaddr = address[0]
         self.myport = int(address[1])
+        self.network.ourMac = address[0]
         return
 
     def sendto(self,bytearray_msg,destination):
@@ -21,14 +26,14 @@ class morse_socket:
         # destination is a tuple (ip,port)
         toipaddr = destination[0]
         toport = destination[1]
-        # ipaddr is in the form groupcode.mac
-        macto = toipaddr.split('.')[1]
-        groupto = toipaddr.split('.')[0] # this group's code is E
+        # ipaddr is in the form "EA" where E is the groupcode and A is the mac
+        macto = toipaddr.split('')[1]
+        groupto = toipaddr.split('')[0] # this group's code is E
         # self.toport is the GPIO port of the receiving device/process
-        # the protocol is "1" for now
+        # the protocol is "E" for now
         # TODO: "myipaddr" is currently never used. This is probably an issue
         msg = bytearray_msg.decode("UTF-8") # don't actually want a bytearray
-        packet = str(groupto)+str(macto)+str(toport)+str(self.myport)+"1"+msg
+        packet = str(groupto)+str(macto)+str(toport)+str(self.myport)+"E"+msg
         self.network.sendMassage(macto,packet)
         # packet structure:
         # |GROUP CODE|MAC TO|GPIO TO|GPIO FROM|PROTOCOL|MSG|

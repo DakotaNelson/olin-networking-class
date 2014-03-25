@@ -239,7 +239,7 @@ class morseNet:
             except:
                 return None, None
 
-    def __init__(self,inpin=11,outpin=7):
+    def __init__(self,inpin=11,outpin=7,address="EE"):
         try:
             self.letter_to_morse = {"\\":"----..","+":".-.-.","A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
 
@@ -249,14 +249,13 @@ class morseNet:
             self.out_pin=outpin
             self.edgeList = []
             self.pin_high = False
-
             self.transmit_speed = 200 # speed of one clock cycle, in ms
             self.recvLen = 0
+            self.msgBuffer = []
+
             self.morseQueue = Queue.Queue()
             self.transmitQueue = Queue.Queue()
             self.passUpQueue = Queue.Queue()
-            self.msgBuffer = []
-            self.ourMac = ''
 
             GPIO.setmode(GPIO.BOARD)
             GPIO.setup(self.out_pin,GPIO.OUT)
@@ -272,7 +271,9 @@ class morseNet:
             self.transmitThread.daemon = True
             self.transmitThread.start()
 
-            self.ourMac = 'AA'
+            self.ourMac = address
+            # in the form "EA" where E is the groupcode
+            # and A is the MAC
 
         except:
             print("something went horribly awry")
