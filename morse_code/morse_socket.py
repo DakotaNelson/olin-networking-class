@@ -9,8 +9,8 @@ class morse_socket:
             import morse_code
             outpin = 11
             inpin = 7
-            self.network = morse_code.morseNet(inpin,outpin,address)
-            self.myipaddr = address
+            self.network = morse_code.morseNet(inpin,outpin)
+            self.myipaddr = "EE"
             self.myport = int(outpin)
 
     def bind(self,address):
