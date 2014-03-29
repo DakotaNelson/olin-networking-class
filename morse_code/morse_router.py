@@ -4,11 +4,6 @@ import morse_ethernet
 lan = morse_socket(lan.AF_INET,lan.SOCK_DGRAM)
 wan = morse_ethernet()
 
-lan.bind(["E.EE",80]) # this is universal among all E team routers
-wan.bind([wanip,wanport])
-# Since we're doing all broadcasts, this may not be necessary
-# (i.e. only if we want to address the router itself for some reason)
-
 lan.settimeout(0.1)
 wan.settimeout(0.1)
 
