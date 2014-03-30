@@ -23,7 +23,7 @@ class morse_socket:
         if not self.network:
             print("Socket has not been initialized.")
             return False
-        # destination is a tuple (ip,port)
+        # destination is a tuple or list (ip,port)
         toipaddr = destination[0]
         toport = destination[1]
         # ipaddr is in the form "EA" where E is the groupcode and A is the mac

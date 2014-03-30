@@ -35,8 +35,8 @@ with socket(AF_INET, SOCK_DGRAM) as wan:
         except timeout:
             #print("No WAN messages.")
         if msg is not None:
-            # determine recipient of the message here
-            # if it's to E, route it in to the network
+            # determine recipient of the message
+            # if it's to E, route it into the network
             destip = address[0]
             destport = address[1]
             print(address)
