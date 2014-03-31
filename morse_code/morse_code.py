@@ -162,7 +162,7 @@ class morseNet:
     def ack(self):
         if self.changeBase(self.checksum(self.msgBuffer[2:-2]),36) == self.msgBuffer[-2]+self.msgBuffer[-1]:
             if self.address == self.msgBuffer[2] + self.msgBuffer[3]:
-                if len(self.msgBuffer)==11 and self.msgBuffer[8]=='E':
+                if len(self.msgBuffer)==12 and self.msgBuffer[8]=='E':
                     self.sent = []
                     return 'ackrecv'
                 else:
@@ -272,7 +272,7 @@ class morseNet:
             except:
                 return None, None
 
-    def setAddress(self, address)
+    def setAddress(self, address):
         # address is a tuple (host,port)
         self.ourMac = address[0]
         return
