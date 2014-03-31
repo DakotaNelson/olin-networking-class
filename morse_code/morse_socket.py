@@ -7,15 +7,16 @@ class morse_socket:
     def __init__(self,family,dtype):
         if family == 2 and dtype == 2:
             import morse_code
-            outpin = 11
-            inpin = 7
+            outpin = 7
+            inpin = 11
             self.network = morse_code.morseNet(inpin,outpin)
             self.myipaddr = "EE"
-            self.myport = int(outpin)
+            self.myport = int(outpin) # our 'port' is the GPIO pin being used.
 
     def bind(self,address):
         self.myipaddr = address[0]
-        self.myport = int(address[1])
+        #self.myport = int(address[1])
+        # Not allowing a change in port, since it's hardcoded to the GPIO pin used.
         self.network.ourMac = address[0]
         return
 
@@ -31,7 +32,6 @@ class morse_socket:
         groupto = toipaddr.split('')[0] # this group's code is E
         # self.toport is the GPIO port of the receiving device/process
         # the protocol is "E" for now
-        # TODO: "myipaddr" is currently never used. This is probably an issue
         msg = bytearray_msg.decode("UTF-8") # don't actually want a bytearray
         UDP_packet = str(self.myport)+str(destport)+msg
         UDPlen = self.changeBase(len(UDP_packet),36)
