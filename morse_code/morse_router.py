@@ -21,10 +21,10 @@ with socket(AF_INET, SOCK_DGRAM) as wan:
             #print("No LAN messages.")
         if msg is not None:
             destip = address[0]
-            destip = destip.split('.') # split the IP into its component bytes
+            destip = destip.split('.') # split the IP into its component octets
             #destport = address[1]
             print(address)
-            if destip.split('.')[2] is not 69:
+            if str(destip[2]) is not '69':
                 destmac = wanNAT[destip[3]]
                 destport = portLookup[destip[2]]
                 wan.sendto(msg,[destmac,destport])
@@ -41,6 +41,6 @@ with socket(AF_INET, SOCK_DGRAM) as wan:
             destport = address[1]
             print(address)
             destip = destip.split('.') # split the IP into its component bytes
-            if destip[2] is 69:
+            if str(destip[2]) is '69':
                 destmac = lanNAT[destip[3]]
                 lan.sendto(msg,[destmac,11])
