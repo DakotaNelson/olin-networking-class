@@ -229,7 +229,8 @@ class morseNet:
         self.transmitQueue.put_nowait(packet)
         print("Sending message!")
         print(packet)
-        self.retr()
+        if msg is not 'E': # don't ask for an ack for an ack
+            self.retr()
 
     def retr(self):
         while not self.sent[-1] == 'sent':
