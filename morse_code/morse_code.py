@@ -80,14 +80,14 @@ class morseNet:
 
     def findWords(self):
         startWait = time()
-    	print('findWords')
+        print('findWords')
         while True:
             while self.pin_high:
                 startWait = time()
             while not self.pin_high:
-		#print(self.transmit_speed)
+                #print(self.transmit_speed)
                 if (time()-startWait >= ((3.*self.transmit_speed)/1000)-.1) and not self.morseQueue.empty():
-			self.translate()
+                    self.translate()
 
     def translate(self):
         edges = []
@@ -114,9 +114,7 @@ class morseNet:
         self.msgBuffer.append(char)
         if len(self.msgBuffer)==8:
             self.recvLen = self.reverseBase(self.msgBuffer[6]+self.msgBuffer[7],36)
-        #print(self.recvLen)
         if len(self.msgBuffer)==self.recvLen+10:
-            #print(self.msgBuffer)
             self.printMsg(self.msgBuffer)
             self.passUpQueue.put_nowait(self.msgBuffer)
             self.msgBuffer = []
