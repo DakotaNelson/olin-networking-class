@@ -103,6 +103,7 @@ class morseNet:
             if result is not None:
                 char += result
             else:
+                char += '+'
                 print('ERROR: Waveform was not able to be identified.')
         try:
             char = self.morse_to_letter[char]
