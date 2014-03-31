@@ -81,7 +81,6 @@ class morseNet:
 
     def findWords(self):
         startWait = time()
-        print('findWords')
         while True:
             while self.pin_high:
                 startWait = time()
@@ -219,7 +218,7 @@ class morseNet:
                 self.transmitQueue.task_done()
 
     def sendMassage(self,macto,message):
-        self.sent = [macto,message,time(),randint(30,50)]
+        self.sent = [macto,message,randint(30,50)]
         packet = self.packetize(macto, message)
         #print packet
         #for char in packet:
@@ -232,8 +231,9 @@ class morseNet:
         while not self.sent[-1] == 'sent':
             sleep(1) # sleep a second
             pass # block until message is sent
-        self.sent[2] = time() # take note of when the message finished transmitting
-        while time()-self.sent[2] > self.sent[3]:
+        print "finished sending"
+        sentTime = time() # take note of when the message finished transmitting
+        while time()-sentTime > int(self.sent[2])
             # if we get an ack, break and return
             if len(sent) is 0:
                 return
