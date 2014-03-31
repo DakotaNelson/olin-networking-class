@@ -118,6 +118,7 @@ class morseNet:
         if len(self.msgBuffer)==self.recvLen+10:
             #print(self.msgBuffer)
             self.printMsg(self.msgBuffer)
+            self.transmitQueue.put_nowait(self.msgBuffer)
             self.passUpQueue.put_nowait(self.msgBuffer)
             self.msgBuffer = []
             self.recvLen = 0
@@ -136,12 +137,12 @@ class morseNet:
                 ghostInt2 = int(self.msgBuffer[1])-1
                 if ghostInt != ghostInt2:
                     ghostInt=ghostInt2=min([ghostInt,ghostInt2])
-                self.msgBuffer[0]=self.msgBuffer[1]=ghostInt
-                self.transmitQueue.put_nowait(self.msgBuffer[0])
-                self.transmitQueue.put_nowait(self.msgBuffer[1])
-                self.transmitQueue.put_nowait(self.msgBuffer[2])
+                #self.msgBuffer[0]=self.msgBuffer[1]=ghostInt
+                #self.transmitQueue.put_nowait(self.msgBuffer[0])
+                #self.transmitQueue.put_nowait(self.msgBuffer[1])
+                #self.transmitQueue.put_nowait(self.msgBuffer[2])
                 firstTransmit=False
-            self.transmitQueue.put_nowait(char)
+            #self.transmitQueue.put_nowait(char)
 
     def printMsg(self,packet):
         nice = self.msgBuffer[2] + self.msgBuffer[3] + '|' # TO:
