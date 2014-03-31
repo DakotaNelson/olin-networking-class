@@ -33,11 +33,15 @@ class morse_socket:
         # the protocol is "E" for now
         # TODO: "myipaddr" is currently never used. This is probably an issue
         msg = bytearray_msg.decode("UTF-8") # don't actually want a bytearray
-        packet = str(groupto)+str(macto)+str(toport)+str(self.myport)+"E"+msg
+        UDP_packet = str(self.myport)+str(destport)+msg
+        UDPlen = self.changeBase(len(UDP_packet),36)
+        packet = str(toipaddr)+str(self.myipaddr)+'E'+str(UDPlen)+UDP_packet
         self.network.sendMassage(macto,packet)
         # packet structure:
-        # |GROUP CODE|MAC TO|GPIO TO|GPIO FROM|PROTOCOL|MSG|
-        # which is then encapsulated by morse_code into
+        # |DEST IP|SRC IP|PROTOCOL|LEN||SRC PORT|DEST PORT|MSG||
+        # Everything within the double pipes is a UDP header, contained within
+        # an IP header, which is then encapsulated by morse_code inside a MAC
+        # header as such:
         # |TTL|MAC TO|MAC FROM|LEN|THIS PACKET|CKSUM|
         return packet
 
@@ -58,3 +62,15 @@ class morse_socket:
     def settimeout(timeout):
         self.timeout = timeout
         return
+
+    def changeBase(self,x,base):
+        y = ''
+        lessThanBase = x < base
+        while x/base != 0 or lessThanBase:
+            if(x%base!=0):
+                y= chr(self.getChar(x/base))+chr(self.getChar(x%base))+y
+            else:
+                y=chr(self.getChar(x/base))+'0'+y
+            x/=base
+            lessThanBase = False
+        return y
