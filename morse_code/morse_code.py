@@ -2,6 +2,7 @@ import Queue
 from threading import Thread
 import RPi.GPIO as GPIO
 from time import sleep, time
+from random import randint
 class morseNet:
 
     def changeBase(self,x,base):
@@ -116,7 +117,9 @@ class morseNet:
             self.recvLen = self.reverseBase(self.msgBuffer[6]+self.msgBuffer[7],36)
         if len(self.msgBuffer)==self.recvLen+10:
             self.printMsg(self.msgBuffer)
-            self.transmitQueue.put_nowait(self.msgBuffer)
+            #self.transmitQueue.put_nowait(self.msgBuffer)
+            ackval = self.ack()
+            print ackval
             self.passUpQueue.put_nowait(self.msgBuffer)
             self.msgBuffer = []
             self.recvLen = 0
@@ -155,7 +158,20 @@ class morseNet:
         else:
             nice += 'BAD'
         print(nice)
-
+    
+    def ack(self):
+        if self.changeBase(self.checksum(self.msgBuffer[2:-2]),36) == self.msgBuffer[-2]+self.msgBuffer[-1]:
+            if self.address == self.msgBuffer[2] + self.msgBuffer[3]:
+                if len(self.msgBuffer)==11 and self.msgBuffer[8]=='e':
+                    self.sent = [] 
+                    return 'ackrecv' 
+                else:
+                    self.sendMassage(self.msgBuffer[4] + self.msgBuffer[5],'e')
+                    return 'acksend'
+            else:
+                return 'notme'
+        else:
+            return 'badcksm'
     def dotOrDash(self,edge):
         tolerance = (.3*self.transmit_speed)/1000
         tDot = (self.transmit_speed)/1000.
@@ -191,6 +207,7 @@ class morseNet:
                     self.dash(self.transmit_speed)
                 if i == len(c)-1:
                     sleep((2.*self.transmit_speed)/1000) # gap between characters
+        self.sent.append('sent')
         #sleep((4.*self.transmit_speed)/1000) # plus 3 above = 7 -> between words
 
     def blinkWorker(self):
@@ -201,12 +218,18 @@ class morseNet:
                 self.transmitQueue.task_done()
 
     def sendMassage(self,macto,message):
+        self.sent = [macto,message,time(),randint,randint(30,50)]
         packet = self.packetize(macto, message)
         #print packet
         for char in packet:
             self.transmitQueue.put_nowait(char)
         print("Sending message!")
 
+    def retr(self):
+        while True:
+            if self.sent[-1]=='sent' and time()-self.sent[2]==self.sent[3]:
+                self.sendMassage(self.sent[0],self.sent[1])
+                
     def packetize(self,macto,msg):
         packet = macto+self.ourMac+self.changeBase(len(msg),36)+msg
         return '99'+packet+self.changeBase(self.checksum(packet),36)
@@ -256,6 +279,7 @@ class morseNet:
             self.transmit_speed = 200 # speed of one clock cycle, in ms
             self.recvLen = 0
             self.msgBuffer = []
+            self.sent = [] 
 
             self.morseQueue = Queue.Queue()
             self.transmitQueue = Queue.Queue()
@@ -266,6 +290,10 @@ class morseNet:
             GPIO.setup(self.in_pin,GPIO.IN)
 
             GPIO.add_event_detect(self.in_pin, GPIO.BOTH, callback=self.waveCallback)
+
+            self.retransmitThread = Thread(target=self.retr)
+            self.retransmitThread = True
+            seld.retransmitThread.start()
 
             self.recieveThread = Thread(target=self.findWords)
             self.recieveThread.daemon = True
