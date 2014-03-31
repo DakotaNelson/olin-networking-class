@@ -2,7 +2,7 @@ import morse_socket
 import CN_Sockets
 
 lanNAT = {'83':'ES','73':'EI','69':'EE','84':'ET'}
-wanNAT = {'T2':51,'T3':'52','IR':'82','T1':'50','II':'73','IN':'78','ID':'68'}
+wanNAT = {'T2':'51','T3':'52','IR':'82','T1':'50','II':'73','IN':'78','ID':'68'}
 # NOTE: wanNAT will have collisions VERY SOON. This is a stopgap that relies on
 # having very few IP addresses and thus no collisions of the last IP entry.
 portLookup = {'84':'A','69':'11','73':'E'}
