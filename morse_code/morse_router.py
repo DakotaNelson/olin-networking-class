@@ -20,6 +20,8 @@ with socket(AF_INET, SOCK_DGRAM) as wan:
         except timeout:
             #print("No LAN messages.")
         if msg is not None:
+            print("Got a message from the LAN.")
+	    print([msg,addr])
             destip = address[0]
             destip = destip.split('.') # split the IP into its component bytes
             #destport = address[1]
@@ -27,6 +29,9 @@ with socket(AF_INET, SOCK_DGRAM) as wan:
             if destip.split('.')[2] is not 69:
                 destmac = wanNAT[destip[3]]
                 destport = portLookup[destip[2]]
+	        print("Sending message to:")
+		print(msg)
+		print([destmac,destport])
                 wan.sendto(msg,[destmac,destport])
 
         try:
@@ -37,10 +42,14 @@ with socket(AF_INET, SOCK_DGRAM) as wan:
         if msg is not None:
             # determine recipient of the message
             # if it's to E, route it into the network
-            destip = address[0]
-            destport = address[1]
-            print(address)
+	    print("Got a message from the WAN.")
+	    print([msg,addr])
+            destip = addr[0]
+            destport = addr[1]
             destip = destip.split('.') # split the IP into its component bytes
             if destip[2] is 69:
                 destmac = lanNAT[destip[3]]
+		print("Sending message to:")
+		print(msg)
+		print([destmac,11])
                 lan.sendto(msg,[destmac,11])
