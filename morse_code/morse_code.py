@@ -158,20 +158,21 @@ class morseNet:
         else:
             nice += 'BAD'
         print(nice)
-    
+
     def ack(self):
         if self.changeBase(self.checksum(self.msgBuffer[2:-2]),36) == self.msgBuffer[-2]+self.msgBuffer[-1]:
             if self.address == self.msgBuffer[2] + self.msgBuffer[3]:
-                if len(self.msgBuffer)==11 and self.msgBuffer[8]=='e':
-                    self.sent = [] 
-                    return 'ackrecv' 
+                if len(self.msgBuffer)==11 and self.msgBuffer[8]=='E':
+                    self.sent = []
+                    return 'ackrecv'
                 else:
-                    self.sendMassage(self.msgBuffer[4] + self.msgBuffer[5],'e')
+                    self.sendMassage(self.msgBuffer[4] + self.msgBuffer[5],'E')
                     return 'acksend'
             else:
                 return 'notme'
         else:
             return 'badcksm'
+
     def dotOrDash(self,edge):
         tolerance = (.3*self.transmit_speed)/1000
         tDot = (self.transmit_speed)/1000.
@@ -218,18 +219,28 @@ class morseNet:
                 self.transmitQueue.task_done()
 
     def sendMassage(self,macto,message):
-        self.sent = [macto,message,time(),randint,randint(30,50)]
+        self.sent = [macto,message,time(),randint(30,50)]
         packet = self.packetize(macto, message)
         #print packet
-        for char in packet:
-            self.transmitQueue.put_nowait(char)
+        #for char in packet:
+        #    self.transmitQueue.put_nowait(char)
+        self.transmitQueue.put_nowait(packet)
         print("Sending message!")
+        self.retr()
 
     def retr(self):
-        while True:
-            if self.sent[-1]=='sent' and time()-self.sent[2]==self.sent[3]:
-                self.sendMassage(self.sent[0],self.sent[1])
-                
+        while not self.sent[-1] == 'sent':
+            sleep(1) # sleep a second
+            pass # block until message is sent
+        self.sent[2] = time() # take note of when the message finished transmitting
+        while time()-self.sent[2] > self.sent[3]:
+            # if we get an ack, break and return
+            if len(sent) is 0:
+                return
+        # else retry with the message
+        self.sendMassage(self.sent[0],self.sent[1])
+        return
+
     def packetize(self,macto,msg):
         packet = macto+self.ourMac+self.changeBase(len(msg),36)+msg
         return '99'+packet+self.changeBase(self.checksum(packet),36)
@@ -279,7 +290,7 @@ class morseNet:
             self.transmit_speed = 200 # speed of one clock cycle, in ms
             self.recvLen = 0
             self.msgBuffer = []
-            self.sent = [] 
+            self.sent = []
 
             self.morseQueue = Queue.Queue()
             self.transmitQueue = Queue.Queue()
@@ -291,9 +302,9 @@ class morseNet:
 
             GPIO.add_event_detect(self.in_pin, GPIO.BOTH, callback=self.waveCallback)
 
-            self.retransmitThread = Thread(target=self.retr)
-            self.retransmitThread = True
-            seld.retransmitThread.start()
+            #self.retransmitThread = Thread(target=self.retr)
+            #self.retransmitThread = True
+            #seld.retransmitThread.start()
 
             self.recieveThread = Thread(target=self.findWords)
             self.recieveThread.daemon = True
