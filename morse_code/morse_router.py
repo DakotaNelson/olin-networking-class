@@ -26,9 +26,11 @@ with socket(AF_INET, SOCK_DGRAM) as wan:
             destip = destip.split('.') # split the IP into its component octets
             #destport = address[1]
             print(address)
-            if str(destip[2]) is not '69':
-                destmac = wanNAT[destip[3]]
-                destport = portLookup[destip[2]]
+            groupCode = str(destip[-2])
+            deviceCode = str(destip[-1])
+            if groupcode is not '69':
+                destmac = wanNAT[deviceCode]
+                destport = portLookup[groupCode]
             print("Sending message to:")
             print(msg)
             print([destmac,destport])
@@ -47,8 +49,10 @@ with socket(AF_INET, SOCK_DGRAM) as wan:
             destip = addr[0]
             destport = addr[1]
             destip = destip.split('.') # split the IP into its component bytes
-            if str(destip[2]) is '69':
-                destmac = lanNAT[destip[3]]
+            groupCode = str(destip[-2])
+            deviceCode = str(destip[-1])
+            if groupCode is '69':
+                destmac = lanNAT[deviceCode]
                 print("Sending message to:")
                 print(msg)
                 print([destmac,11])
