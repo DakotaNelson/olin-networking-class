@@ -159,13 +159,16 @@ class morseNet:
         print(nice)
 
     def ack(self):
+	print 'ack'
         if self.changeBase(self.checksum(self.msgBuffer[2:-2]),36) == self.msgBuffer[-2]+self.msgBuffer[-1]:
-            if self.address == self.msgBuffer[2] + self.msgBuffer[3]:
+            if self.ourMac == self.msgBuffer[2] + self.msgBuffer[3]:
                 if len(self.msgBuffer)==12 and self.msgBuffer[8]=='E':
                     self.sent = []
+                    print("clearing self.sent")
                     return 'ackrecv'
                 else:
                     self.sendMassage(self.msgBuffer[4] + self.msgBuffer[5],'E')
+                    print "sent an ack"
                     return 'acksend'
             else:
                 return 'notme'
@@ -225,6 +228,7 @@ class morseNet:
         #    self.transmitQueue.put_nowait(char)
         self.transmitQueue.put_nowait(packet)
         print("Sending message!")
+        print(packet)
         self.retr()
 
     def retr(self):
