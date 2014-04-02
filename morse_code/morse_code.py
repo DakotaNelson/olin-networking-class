@@ -232,7 +232,7 @@ class morseNet:
         print(packet)
         if message == 'E': # if this is an ack
             return # don't ack
-        self.retr() 
+        self.retr()
 
     def retr(self):
         while not self.sent[-1] == 'sent':
@@ -264,18 +264,22 @@ class morseNet:
             try:
                 breakout = self.passUpQueue.get(True,timeout)
                 print(breakout)
-                address = breakout[8:11]
-                remainderMsg = ''.join(breakout[11:-2])
-                print(remainderMsg)
-                return [address, remainderMsg]
+                ipfrom = breakout[8:11]
+                print(ipfrom)
+                msg = ''.join(breakout[8:-2])
+                print(msg)
+                return [ipfrom, msg]
             except:
                 return None, None
         else:
             try:
                 breakout = self.passUpQueue.get_nowait()
-                address = breakout[4] + breakout[5]
-                remainderMsg = ''.join(breakout[6:-3])
-                return [address, remainderMsg]
+                print(breakout)
+                ipfrom = breakout[8:11]
+                print(ipfrom)
+                msg = ''.join(breakout[8:-2])
+                print(msg)
+                return [ipfrom, msg]
             except:
                 return None, None
 
