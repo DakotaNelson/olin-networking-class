@@ -28,7 +28,7 @@ class morse_socket:
         toipaddr = destination[0]
         toport = destination[1]
         # ipaddr is in the form "EA" where E is the groupcode and A is the mac
-        macto = toipaddr[1]
+        macto = toipaddr
         groupto = toipaddr[0] # this group's code is E
         # self.toport is the GPIO port of the receiving device/process
         # the protocol is "E" for now
