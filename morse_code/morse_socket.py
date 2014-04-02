@@ -17,7 +17,7 @@ class morse_socket:
         self.myipaddr = address[0]
         #self.myport = int(address[1])
         # Not allowing a change in port, since it's hardcoded to the GPIO pin used.
-        self.network.ourMac = address[0]
+        self.network.setAddress(address)
         return
 
     def sendto(self,bytearray_msg,destination):
@@ -36,6 +36,8 @@ class morse_socket:
         UDP_packet = str(self.myport)+str(toport)+msg
         UDPlen = self.changeBase(len(UDP_packet),36)
         packet = str(toipaddr)+str(self.myipaddr)+'E'+str(UDPlen)+UDP_packet
+        print("Final packet is:")
+        print(packet)
         self.network.sendMassage(macto,packet)
         # packet structure:
         # |DEST IP|SRC IP|PROTOCOL|LEN||SRC PORT|DEST PORT|MSG||

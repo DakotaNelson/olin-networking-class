@@ -249,7 +249,7 @@ class morseNet:
         return
 
     def packetize(self,macto,msg):
-        packet = macto+self.ourMac+self.changeBase(len(msg),36)+msg
+        packet = str(macto)+str(self.ourMac)+self.changeBase(len(msg),36)+msg
         return '99'+packet+self.changeBase(self.checksum(packet),36)
 
     def checksum(self,msg):
@@ -286,6 +286,9 @@ class morseNet:
     def setAddress(self, address):
         # address is a tuple (host,port)
         self.ourMac = address[0]
+        print("This device's MAC/IP has been changed to:")
+        print(self.ourMac)
+        #self.ourPort (or something) = address[1]
         return
 
     def __init__(self,inpin=11,outpin=7,address="EE"):
