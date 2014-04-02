@@ -74,3 +74,6 @@ class morse_socket:
             x/=base
             lessThanBase = False
         return y
+    def getChar(self,x):
+      if x < 10: return x+48
+      else: return x+55
