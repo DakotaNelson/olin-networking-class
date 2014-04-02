@@ -81,7 +81,6 @@ class morseNet:
 
     def findWords(self):
         startWait = time()
-        print('findWords')
         while True:
             while self.pin_high:
                 startWait = time()
@@ -104,6 +103,7 @@ class morseNet:
             if result is not None:
                 char += result
             else:
+                char += '+'
                 print('ERROR: Waveform was not able to be identified.')
         try:
             char = self.morse_to_letter[char]
@@ -160,13 +160,16 @@ class morseNet:
         print(nice)
 
     def ack(self):
+	print 'ack'
         if self.changeBase(self.checksum(self.msgBuffer[2:-2]),36) == self.msgBuffer[-2]+self.msgBuffer[-1]:
-            if self.address == self.msgBuffer[2] + self.msgBuffer[3]:
+            if self.ourMac == self.msgBuffer[2] + self.msgBuffer[3]:
                 if len(self.msgBuffer)==12 and self.msgBuffer[8]=='E':
                     self.sent = []
+                    print("clearing self.sent")
                     return 'ackrecv'
                 else:
                     self.sendMassage(self.msgBuffer[4] + self.msgBuffer[5],'E')
+                    print "sent an ack"
                     return 'acksend'
             else:
                 return 'notme'
@@ -219,23 +222,27 @@ class morseNet:
                 self.transmitQueue.task_done()
 
     def sendMassage(self,macto,message):
-        self.sent = [macto,message,time(),randint(30,50)]
+        self.sent = [macto,message,randint(30,50)]
         packet = self.packetize(macto, message)
         #print packet
         #for char in packet:
         #    self.transmitQueue.put_nowait(char)
         self.transmitQueue.put_nowait(packet)
         print("Sending message!")
+        print(packet)
+        if message == 'E': # if this is an ack
+            return # don't ack
         self.retr()
 
     def retr(self):
         while not self.sent[-1] == 'sent':
             sleep(1) # sleep a second
             pass # block until message is sent
-        self.sent[2] = time() # take note of when the message finished transmitting
-        while time()-self.sent[2] > self.sent[3]:
+        print "finished sending"
+        sentTime = time() # take note of when the message finished transmitting
+        while time()-sentTime < int(self.sent[2]):
             # if we get an ack, break and return
-            if len(sent) is 0:
+            if len(self.sent) is 0:
                 return
         # else retry with the message
         self.sendMassage(self.sent[0],self.sent[1])
@@ -257,18 +264,22 @@ class morseNet:
             try:
                 breakout = self.passUpQueue.get(True,timeout)
                 print(breakout)
-                address = breakout[8:11]
-                remainderMsg = ''.join(breakout[11:-2])
-                print(remainderMsg)
-                return [address, remainderMsg]
+                ipfrom = breakout[8:11]
+                print(ipfrom)
+                msg = ''.join(breakout[8:-2])
+                print(msg)
+                return [ipfrom, msg]
             except:
                 return None, None
         else:
             try:
                 breakout = self.passUpQueue.get_nowait()
-                address = breakout[4] + breakout[5]
-                remainderMsg = ''.join(breakout[6:-3])
-                return [address, remainderMsg]
+                print(breakout)
+                ipfrom = breakout[8:11]
+                print(ipfrom)
+                msg = ''.join(breakout[8:-2])
+                print(msg)
+                return [ipfrom, msg]
             except:
                 return None, None
 
