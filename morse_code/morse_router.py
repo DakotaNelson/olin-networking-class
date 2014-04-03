@@ -19,6 +19,7 @@ with socket(AF_INET, SOCK_DGRAM) as wan:
             msg,addr = lan.recvfrom()
         except timeout:
             print("No LAN messages.")
+
         if msg is not None:
             print("Got a message from the LAN.")
             print([msg,addr])
@@ -34,13 +35,14 @@ with socket(AF_INET, SOCK_DGRAM) as wan:
                 print("Sending message to:")
                 print(msg)
                 print([destmac,destport])
-                wan.sendto(msg,[destmac,destport])
+                wan.sendto(bytearray(msg),[destmac,destport])
 
         try:
             bytearray_msg, addr = wan.recvfrom(1024)
             msg = bytearray_msg.decode("UTF-8")
         except timeout:
             print("No WAN messages.")
+
         if msg is not None:
             # determine recipient of the message
             # if it's to E, route it into the network
@@ -56,4 +58,4 @@ with socket(AF_INET, SOCK_DGRAM) as wan:
                 print("Sending message to:")
                 print(msg)
                 print([destmac,11])
-                lan.sendto(msg,[destmac,11])
+                lan.sendto(bytearray(msg),[destmac,11])
