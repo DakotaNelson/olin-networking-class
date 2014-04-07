@@ -32,10 +32,13 @@ class morseNet:
         if ord(x)< 58: return ord(x)-48
         else: return ord(x)-55
 
-    def on(self): GPIO.output(self.out_pin,True)
+    def on(self): 
+	GPIO.setup(self.out_pin, GPIO.OUT)
+	GPIO.output(self.out_pin,True)
 
-    def off(self): GPIO.output(self.out_pin,False)
-
+    def off(self): 
+	GPIO.output(self.out_pin,False)
+	GPIO.setup(self.out_pin,GPIO.IN)
     def blink(self,n=5,t=1000):
         for i in range(n):
             self.on()
