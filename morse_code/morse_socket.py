@@ -61,7 +61,7 @@ class morse_socket:
         message = msg[1]
         return message,address
 
-    def settimeout(timeout):
+    def settimeout(self,timeout):
         self.timeout = timeout
         return
 
