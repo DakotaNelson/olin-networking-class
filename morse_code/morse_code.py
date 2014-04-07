@@ -140,8 +140,11 @@ class morseNet:
             pass
         else:
             if firstTransmit:
-                ghostInt = int(self.msgBuffer[0])-1
-                ghostInt2 = int(self.msgBuffer[1])-1
+		try:
+			ghostInt = int(self.msgBuffer[0])-1
+			ghostInt2 = int(self.msgBuffer[1])-1
+		except:
+			ghostInt=ghostInt2=1
                 if ghostInt != ghostInt2:
                     ghostInt=ghostInt2=min([ghostInt,ghostInt2])
                 #self.msgBuffer[0]=self.msgBuffer[1]=ghostInt
