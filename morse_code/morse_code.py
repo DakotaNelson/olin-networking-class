@@ -121,9 +121,9 @@ class morseNet:
         if len(self.msgBuffer)==self.recvLen+10:
             self.printMsg(self.msgBuffer)
             #self.transmitQueue.put_nowait(self.msgBuffer)
-            if len(self.msgBuffer) == 11 and self.msgBuffer[8]='E'
+            if len(self.msgBuffer) == 11 and self.msgBuffer[8]=='E':
                 pass
-            else
+            else:
                 ackval = self.ack()
                 print ackval
             self.passUpQueue.put_nowait(self.msgBuffer)
