@@ -89,7 +89,7 @@ class morseNet:
                 startWait = time()
             while not self.pin_high:
                 #print(self.transmit_speed)
-                if (time()-startWait >= ((3.*self.transmit_speed)/1000)-.1*self.transmit_speed) and not self.morseQueue.empty():
+                if (time()-startWait >= ((3.*self.transmit_speed)/1000)-.1) and not self.morseQueue.empty():
                     self.translate()
 
     def translate(self):
