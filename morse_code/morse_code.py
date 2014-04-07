@@ -89,7 +89,7 @@ class morseNet:
                 startWait = time()
             while not self.pin_high:
                 #print(self.transmit_speed)
-                if (time()-startWait >= ((3.*self.transmit_speed)/1000)-.1) and not self.morseQueue.empty():
+                if (time()-startWait >= ((3.*self.transmit_speed)/1000)-.1*self.transmit_speed) and not self.morseQueue.empty():
                     self.translate()
 
     def translate(self):
@@ -121,7 +121,7 @@ class morseNet:
         if len(self.msgBuffer)==self.recvLen+10:
             self.printMsg(self.msgBuffer)
             #self.transmitQueue.put_nowait(self.msgBuffer)
-            if len(self.msgBuffer) == 11 and self.msgBuffer[8]=='E':
+            if len(self.msgBuffer) == 20 and self.msgBuffer[8]=='E':
                 pass
             else:
                 ackval = self.ack()
