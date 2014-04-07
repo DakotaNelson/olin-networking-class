@@ -121,7 +121,7 @@ class morseNet:
         if len(self.msgBuffer)==self.recvLen+10:
             self.printMsg(self.msgBuffer)
             #self.transmitQueue.put_nowait(self.msgBuffer)
-            if len(self.msgBuffer) == 20 and self.msgBuffer[8]=='E':
+            if len(self.msgBuffer) == 11 and self.msgBuffer[8]=='E':
                 pass
             else:
                 ackval = self.ack()
@@ -236,8 +236,8 @@ class morseNet:
         self.transmitQueue.put_nowait(packet)
         print("Sending message!")
         print(packet)
-        #if message == 'E': # if this is an ack
-        #    return # don't ack
+        if message == 'E': # if this is an ack
+            return # don't ack
         self.retr()
 
     def retr(self):
