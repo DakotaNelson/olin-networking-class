@@ -121,8 +121,11 @@ class morseNet:
         if len(self.msgBuffer)==self.recvLen+10:
             self.printMsg(self.msgBuffer)
             #self.transmitQueue.put_nowait(self.msgBuffer)
-            ackval = self.ack()
-            print ackval
+            if len(self.msgBuffer) == 11 and self.msgBuffer[8]='E'
+                pass
+            else
+                ackval = self.ack()
+                print ackval
             self.passUpQueue.put_nowait(self.msgBuffer)
             self.msgBuffer = []
             self.recvLen = 0
@@ -225,7 +228,7 @@ class morseNet:
                 self.transmitQueue.task_done()
 
     def sendMassage(self,macto,message):
-        self.sent = [macto,message,randint(30,50)]
+        self.sent = [macto,message,randint(10,60)]
         packet = self.packetize(macto, message)
         #print packet
         #for char in packet:
@@ -233,8 +236,8 @@ class morseNet:
         self.transmitQueue.put_nowait(packet)
         print("Sending message!")
         print(packet)
-        if message == 'E': # if this is an ack
-            return # don't ack
+        #if message == 'E': # if this is an ack
+        #    return # don't ack
         self.retr()
 
     def retr(self):
