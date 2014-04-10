@@ -41,7 +41,7 @@ while True:
     try:
         bytearray_msg, addr = wan.recvfrom(1024)
         msg = bytearray_msg.decode("UTF-8")
-    except timeout:
+    except: #timeout:
         print("No WAN messages.")
 
     if msg is not None:

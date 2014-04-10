@@ -32,11 +32,11 @@ class morseNet:
         if ord(x)< 58: return ord(x)-48
         else: return ord(x)-55
 
-    def on(self): 
+    def on(self):
 	GPIO.setup(self.out_pin, GPIO.OUT)
 	GPIO.output(self.out_pin,True)
 
-    def off(self): 
+    def off(self):
 	GPIO.output(self.out_pin,False)
 	GPIO.setup(self.out_pin,GPIO.IN)
     def blink(self,n=5,t=1000):
@@ -313,7 +313,7 @@ class morseNet:
             self.out_pin=outpin
             self.edgeList = []
             self.pin_high = False
-            self.transmit_speed = 200 # speed of one clock cycle, in ms
+            self.transmit_speed = 100 # speed of one clock cycle, in ms
             self.recvLen = 0
             self.msgBuffer = []
             self.sent = []
@@ -345,5 +345,5 @@ class morseNet:
             # and A is the MAC
 
         except:
-            print("something went horribly awry")
+            print("Something went horribly awry when starting morse_code.py")
 
