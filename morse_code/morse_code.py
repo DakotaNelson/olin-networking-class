@@ -189,8 +189,8 @@ class morseNet:
 	 	    tempTransmitQueue = Queue.Queue()
 		    tempTransmitQueue.put_nowait(packet)
 		    while not transmitQueue.empty():
-			tempTransmitQueue.put_nowait(transmitQueue.get())
-		    transmitQueue = tempTransmitQueue
+			tempTransmitQueue.put_nowait(self.transmitQueue.get())
+		    self.transmitQueue = tempTransmitQueue
 		    print "sent an ack"
                     return 'acksend'
             else:
