@@ -33,12 +33,12 @@ class morseNet:
         else: return ord(x)-55
 
     def on(self):
-	GPIO.setup(self.out_pin, GPIO.OUT)
-	GPIO.output(self.out_pin,True)
+        GPIO.setup(self.out_pin, GPIO.OUT)
+        GPIO.output(self.out_pin,True)
 
     def off(self):
-	GPIO.output(self.out_pin,False)
-	GPIO.setup(self.out_pin,GPIO.IN)
+        GPIO.output(self.out_pin,False)
+        GPIO.setup(self.out_pin,GPIO.IN)
     def blink(self,n=5,t=1000):
         for i in range(n):
             self.on()
@@ -93,7 +93,7 @@ class morseNet:
                     self.translate()
                 elif self.morseQueue.empty() and time() - startWait > 5:
                     self.msgBuffer = []
-		    self.recvLen = 0
+                    self.recvLen = 0
 
     def translate(self):
         edges = []
@@ -186,7 +186,7 @@ class morseNet:
                 else:
                     #self.sendMassage(self.msgBuffer[4] + self.msgBuffer[5],'E')
                     packet = self.packetize(self.msgBuffer[4]+self.msgBuffer[5],'E')
-		    self.transmitQueue.put_nowait(packet)
+                    self.transmitQueue.put_nowait(packet)
                     print "sent an ack"
                     return 'acksend'
             else:
@@ -260,7 +260,8 @@ class morseNet:
         sentTime = time() # take note of when the message finished transmitting
         while True:
             # if we get an ack, break and return
-            if len(self.sent) is 0:
+            if not self.sent:
+                print("ack recieved!")
                 return
             if time()-sentTime > int(self.sent[2]):
                 break
