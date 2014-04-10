@@ -62,6 +62,7 @@ class morseNet:
         self.pin_high = True
         if not GPIO.input(channel): print('wat')
         self.edgeList.append([time(),0])
+        self.lastTransmit = time()
 
     def fallingCallback(self, channel):
         self.pin_high = False
@@ -236,11 +237,14 @@ class morseNet:
         while True:
             message = self.transmitQueue.get()
             if not message is None:
+                while time()-self.lastTransmit < 5.*transmit_speed:
+                    sleep(.1)
+                    pass
                 self.blinkMessage(message)
                 self.transmitQueue.task_done()
 
     def sendMassage(self,macto,message):
-        self.sent = [macto,message,randint(10,180)]
+        self.sent = [macto,message,randint(10,90)]
         packet = self.packetize(macto, message)
         #print packet
         #for char in packet:
@@ -327,6 +331,7 @@ class morseNet:
             self.recvLen = 0
             self.msgBuffer = []
             self.sent = []
+            self.lastTransmit = time()
 
             self.morseQueue = Queue.Queue()
             self.transmitQueue = Queue.Queue()
