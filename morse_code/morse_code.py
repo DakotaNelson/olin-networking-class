@@ -186,11 +186,7 @@ class morseNet:
                 else:
                     #self.sendMassage(self.msgBuffer[4] + self.msgBuffer[5],'E')
                     packet = self.packetize(self.msgBuffer[4]+self.msgBuffer[5],'E')
-                    tempTransmitQueue = Queue.Queue()
-                    tempTransmitQueue.put_nowait(packet)
-                    while not self.transmitQueue.empty():
-                        tempTransmitQueue.put_nowait(self.transmitQueue.get())
-                        self.transmitQueue = tempTransmitQueue
+		    self.transmitQueue.put_nowait(packet)
                     print "sent an ack"
                     return 'acksend'
             else:
