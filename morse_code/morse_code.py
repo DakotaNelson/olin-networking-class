@@ -93,6 +93,7 @@ class morseNet:
                     self.translate()
                 elif self.morseQueue.empty():
                     self.msgBuffer = []
+		    self.recvLen = 0
 
     def translate(self):
         edges = []
