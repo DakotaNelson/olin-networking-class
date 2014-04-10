@@ -103,18 +103,18 @@ class morseNet:
         tolerance = (.3*self.transmit_speed)/1000
         char = ''
         #print(edges)
-	fail = False
+        fail = False
         for edge in edges:
             result = self.dotOrDash(edge)
             if result is not None:
                 char += result
             else:
-		fail = True
+                fail = True
                 print('ERROR: Waveform was not able to be identified.')
         try:
             if not fail:
-		char = self.morse_to_letter[char]
-        else: char = '+'
+                char = self.morse_to_letter[char]
+            else: char = '+'
         except KeyError:
             print('ERROR: KeyError thrown in translation of waveforms')
             return
