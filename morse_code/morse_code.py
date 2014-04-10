@@ -262,10 +262,12 @@ class morseNet:
             pass # block until message is sent
         print "finished sending"
         sentTime = time() # take note of when the message finished transmitting
-        while time()-sentTime < int(self.sent[2]):
+        while True:
             # if we get an ack, break and return
             if len(self.sent) is 0:
                 return
+            if time()-sentTime > int(self.sent[2]):
+                break
         # else retry with the message
         self.sendMassage(self.sent[0],self.sent[1])
         return
