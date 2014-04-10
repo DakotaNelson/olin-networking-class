@@ -243,7 +243,7 @@ class morseNet:
                 self.transmitQueue.task_done()
 
     def sendMassage(self,macto,message):
-        self.sent = [macto,message,randint(10,60)]
+        self.sent = [macto,message,randint(10,180)]
         packet = self.packetize(macto, message)
         #print packet
         #for char in packet:
