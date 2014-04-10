@@ -91,7 +91,7 @@ class morseNet:
                 #print(self.transmit_speed)
                 if (time()-startWait >= ((3.*self.transmit_speed)/1000)-.1) and not self.morseQueue.empty():
                     self.translate()
-                elif self.morseQueue.empty():
+                elif self.morseQueue.empty() and time() - startWait > 5:
                     self.msgBuffer = []
 		    self.recvLen = 0
 
