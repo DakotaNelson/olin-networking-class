@@ -91,6 +91,8 @@ class morseNet:
                 #print(self.transmit_speed)
                 if (time()-startWait >= ((3.*self.transmit_speed)/1000)-.1) and not self.morseQueue.empty():
                     self.translate()
+                elif self.morseQueue.empty():
+                    self.msgBuffer = []
 
     def translate(self):
         edges = []
@@ -112,7 +114,7 @@ class morseNet:
         try:
             if not fail:
 		char = self.morse_to_letter[char]
-	    else: char = '+'
+        else: char = '+'
         except KeyError:
             print('ERROR: KeyError thrown in translation of waveforms')
             return
@@ -125,7 +127,7 @@ class morseNet:
             self.printMsg(self.msgBuffer)
             #self.transmitQueue.put_nowait(self.msgBuffer)
             if len(self.msgBuffer) == 11 and self.msgBuffer[8]=='E':
-		self.sent = []
+                self.sent = []
                 pass
             else:
                 ackval = self.ack()
@@ -144,11 +146,11 @@ class morseNet:
             pass
         else:
             if firstTransmit:
-		try:
-			ghostInt = int(self.msgBuffer[0])-1
-			ghostInt2 = int(self.msgBuffer[1])-1
-		except:
-			ghostInt=ghostInt2=1
+                try:
+                    ghostInt = int(self.msgBuffer[0])-1
+                    ghostInt2 = int(self.msgBuffer[1])-1
+                except:
+                    ghostInt=ghostInt2=1
                 if ghostInt != ghostInt2:
                     ghostInt=ghostInt2=min([ghostInt,ghostInt2])
                 #self.msgBuffer[0]=self.msgBuffer[1]=ghostInt
@@ -173,7 +175,7 @@ class morseNet:
         print(nice)
 
     def ack(self):
-	print 'ack'
+        print 'ack'
         if self.changeBase(self.checksum(self.msgBuffer[2:-2]),36) == self.msgBuffer[-2]+self.msgBuffer[-1]:
             if self.ourMac == self.msgBuffer[2] + self.msgBuffer[3]:
                 if len(self.msgBuffer)==12 and self.msgBuffer[8]=='E':
