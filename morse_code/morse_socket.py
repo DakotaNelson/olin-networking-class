@@ -32,7 +32,8 @@ class morse_socket:
         groupto = toipaddr[0] # this group's code is E
         # self.toport is the GPIO port of the receiving device/process
         # the protocol is "E" for now
-        msg = bytearray_msg.decode("UTF-8") # don't actually want a bytearray
+        msg = bytearray_msg.decode('utf-8') # don't actually want a bytearray
+        msg = str(msg)
         UDP_packet = str(self.myport)+str(toport)+msg
         UDPlen = self.changeBase(len(UDP_packet),36)
         packet = str(toipaddr)+str(self.myipaddr)+'E'+str(UDPlen)+UDP_packet
