@@ -7,7 +7,7 @@ wanNAT = {'T2':'51','T3':'52','IR':'82','T1':'50','II':'73','IN':'78','ID':'68'}
 # having very few IP addresses and thus no collisions of the last IP entry.
 portLookup = {'84':'A','69':'11','73':'E'}
 
-socket, AF_INET, SOCK_DGRAM, timeout = CN_Sockets.socket, CN_Sockets.AF_INET, CN_Sockets.SOCK_DGRAM, CN_Sockets.timeout
+socket, AF_INET, SOCK_DGRAM, timeout = CN_Sockets.CN_Socket, CN_Sockets.AF_INET, CN_Sockets.SOCK_DGRAM, CN_Sockets.timeout
 
 lan = morse_socket.morse_socket(2,2)
 with socket(AF_INET, SOCK_DGRAM) as wan:

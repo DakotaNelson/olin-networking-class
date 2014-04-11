@@ -134,7 +134,6 @@ class morseNet:
                     pass
             else:
                 ackval = self.ack()
-                print ackval
             self.passUpQueue.put_nowait(self.msgBuffer)
             self.msgBuffer = []
             self.recvLen = 0
@@ -178,7 +177,7 @@ class morseNet:
         print(nice)
 
     def ack(self):
-        print 'ack'
+        print('ack')
         if self.changeBase(self.checksum(self.msgBuffer[2:-2]),36) == self.msgBuffer[-2]+self.msgBuffer[-1]:
             if self.ourMac == self.msgBuffer[2] + self.msgBuffer[3]:
                 if len(self.msgBuffer)==12 and self.msgBuffer[8]=='E':
@@ -189,7 +188,7 @@ class morseNet:
                     #self.sendMassage(self.msgBuffer[4] + self.msgBuffer[5],'E')
                     packet = self.packetize(self.msgBuffer[4]+self.msgBuffer[5],'E')
                     self.transmitQueue.put_nowait((0,packet))
-                    print "sent an ack"
+                    print("sent an ack")
                     return 'acksend'
             else:
                 return 'notme'
@@ -236,7 +235,7 @@ class morseNet:
 
     def blinkWorker(self):
         while True:
-            while time()-self.lastTransmit < 25.*self.transmit_speed/1000:
+            while time()-self.lastTransmit < 50.*self.transmit_speed/1000:
                 sleep(.1)
                 pass
             message = self.transmitQueue.get()
@@ -260,7 +259,7 @@ class morseNet:
         while not self.sent[-1] == 'sent':
             sleep(1) # sleep a second
             pass # block until message is sent
-        print "finished sending"
+        print("finished sending")
         sentTime = time() # take note of when the message finished transmitting
         waitTime = int(self.sent[2]) # how long to back off for
         while True:
