@@ -36,8 +36,8 @@ class UDP_Server(object):
                     print (bytearray_msg.decode("UTF-8"))
                     self.packetQueue.put_nowait([source_IP,source_port,bytearray_msg.decode("UTF-8")])
 
-                except timeout:
-                    print (".",end="",flush=True)
+                except:
+                    #print (".",end="",flush=True)
                     continue
         sys.exit()
         return

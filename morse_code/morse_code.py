@@ -358,6 +358,7 @@ class morseNet:
             # in the form "EA" where E is the groupcode
             # and A is the MAC
 
-        except:
+        except Exception as e:
+            print(e)
             print("Something went horribly awry when starting morse_code.py")
 

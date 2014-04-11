@@ -18,27 +18,26 @@ class UDP_Server(object):
                 return None
 ######################################################################
     def recieveData(self):
-        socket, AF_INET, SOCK_DGRAM, timeout = morse_socket, morse_socket.AF_INET, morse_socket.SOCK_DGRAM, morse_socket.timeout
-        with socket(AF_INET, SOCK_DGRAM) as sock:
-            sock.bind((self.ip,self.port))
-            sock.settimeout(2.0) # 2 second timeout
-            self.socket = sock
+        socket, AF_INET, SOCK_DGRAM = morse_socket,2,2
+        #with socket(AF_INET, SOCK_DGRAM) as sock:
+        sock = socket(AF_INET,SOCK_DGRAM)
+        sock.bind((self.ip,self.port))
+        sock.settimeout(2.0) # 2 second timeout
+        self.socket = sock
 
-            print ("UDP Server started on IP Address {}, port {}".format(self.ip,self.port,))
+        print ("UDP Server started on IP Address {}, port {}".format(self.ip,self.port,))
 
-            while not self.killReciever:
-                try:
-                    bytearray_msg, address = sock.recvfrom(1024)
-                    source_IP, source_port = address
+        while not self.killReciever:
+            try:
+                bytearray_msg, address = sock.recvfrom(1024)
+                source_IP, source_port = address
 
-                    print ("\nMessage received from ip address {}, port {}:".format(
-                        source_IP,source_port))
-                    print (bytearray_msg.decode("UTF-8"))
-                    self.packetQueue.put_nowait([source_IP,source_port,bytearray_msg.decode("UTF-8")])
+                print ("\nMessage received from ip address {}, port {}:".format(source_IP,source_port))
+                print (bytearray_msg.decode("UTF-8"))
+                self.packetQueue.put_nowait([source_IP,source_port,bytearray_msg.decode("UTF-8")])
 
-                except timeout:
-                    print (".",end="",flush=True)
-                    continue
+            except:
+                continue
         sys.exit()
         return
 ######################################################################
