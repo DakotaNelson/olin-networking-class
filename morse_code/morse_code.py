@@ -240,6 +240,7 @@ class morseNet:
                 sleep(.1)
                 pass
             message = self.transmitQueue.get()
+            message = message[1] # drop the part setting the message's priority
             if not message is None:
                 self.blinkMessage(message)
                 self.transmitQueue.task_done()
