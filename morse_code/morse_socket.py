@@ -36,8 +36,6 @@ class morse_socket:
         UDP_packet = str(self.myport)+str(toport)+msg
         UDPlen = self.changeBase(len(UDP_packet),36)
         packet = str(toipaddr)+str(self.myipaddr)+'E'+str(UDPlen)+UDP_packet
-        print("Final packet is:")
-        print(packet)
         self.network.sendMassage(macto,packet)
         # packet structure:
         # |DEST IP|SRC IP|PROTOCOL|LEN||SRC PORT|DEST PORT|MSG||
