@@ -127,7 +127,7 @@ class morseNet:
             self.recvLen = self.reverseBase(self.msgBuffer[6]+self.msgBuffer[7],36)
         if len(self.msgBuffer)==self.recvLen+10:
             self.printMsg(self.msgBuffer)
-            #self.transmitQueue.put_nowait(self.msgBuffer)
+            #self.transmitQueue.put_nowait((1,self.msgBuffer))
             if len(self.msgBuffer) == 11 and self.msgBuffer[8]=='E':
                 if (str(self.msgBuffer[2]) + str(self.msgBuffer[3])) == self.ourMac:
                     self.sent = []
@@ -157,11 +157,11 @@ class morseNet:
                 if ghostInt != ghostInt2:
                     ghostInt=ghostInt2=min([ghostInt,ghostInt2])
                 #self.msgBuffer[0]=self.msgBuffer[1]=ghostInt
-                #self.transmitQueue.put_nowait(self.msgBuffer[0])
-                #self.transmitQueue.put_nowait(self.msgBuffer[1])
-                #self.transmitQueue.put_nowait(self.msgBuffer[2])
+                #self.transmitQueue.put_nowait((1,self.msgBuffer[0]))
+                #self.transmitQueue.put_nowait((1,self.msgBuffer[1]))
+                #self.transmitQueue.put_nowait((1,self.msgBuffer[2]))
                 firstTransmit=False
-            #self.transmitQueue.put_nowait(char)
+            #self.transmitQueue.put_nowait((1,char))
 
     def printMsg(self,packet):
         nice = self.msgBuffer[2] + self.msgBuffer[3] + '|' # TO:
@@ -188,7 +188,7 @@ class morseNet:
                 else:
                     #self.sendMassage(self.msgBuffer[4] + self.msgBuffer[5],'E')
                     packet = self.packetize(self.msgBuffer[4]+self.msgBuffer[5],'E')
-                    self.transmitQueue.put_nowait(packet)
+                    self.transmitQueue.put_nowait((0,packet))
                     print "sent an ack"
                     return 'acksend'
             else:
@@ -250,11 +250,9 @@ class morseNet:
         #print packet
         #for char in packet:
         #    self.transmitQueue.put_nowait(char)
-        self.transmitQueue.put_nowait(packet)
+        self.transmitQueue.put_nowait((1,packet))
         print("Sending message!")
         print(packet)
-        if message == 'E': # if this is an ack
-            return # don't ack
         self.retr()
 
     def retr(self):
