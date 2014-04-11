@@ -1,6 +1,7 @@
 from morse_socket import morse_socket
 sock = morse_socket(morse_socket.AF_INET,morse_socket.SOCK_DGRAM)
-mac = input("Enter the server's two character MAC:")
+sock.network.off()
+mac = input("Enter the target server's two character MAC:")
 mac = mac.upper()
 sock.bind(["EE",11])
 while True:

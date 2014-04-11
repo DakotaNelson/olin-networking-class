@@ -328,7 +328,7 @@ class morseNet:
             self.out_pin=outpin
             self.edgeList = []
             self.pin_high = False
-            self.transmit_speed = 100 # speed of one clock cycle, in ms
+            self.transmit_speed = 150 # speed of one clock cycle, in ms
             self.recvLen = 0
             self.msgBuffer = []
             self.sent = []
