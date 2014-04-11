@@ -20,7 +20,7 @@ with socket(AF_INET, SOCK_DGRAM) as wan:
         try:
             msg,addr = lan.recvfrom()
         except timeout:
-            print("No LAN messages.")
+            #print("No LAN messages.")
 
         if msg is not None:
             print("Got a message from the LAN.")
@@ -42,8 +42,8 @@ with socket(AF_INET, SOCK_DGRAM) as wan:
         try:
             bytearray_msg, addr = wan.recvfrom(1024)
             msg = bytearray_msg.decode("UTF-8")
-        except: #timeout:
-            print("No WAN messages.")
+        except:
+            #print("No WAN messages.")
 
         if msg is not None:
         # determine recipient of the message
