@@ -2,44 +2,60 @@ import Queue
 from threading import Thread
 import RPi.GPIO as GPIO
 from time import sleep, time
+from random import randint
+class morseNet:
 
-edgeList = []
-in_pin = 11
-out_pin = 7
-pin_high = False
+    def changeBase(self,x,base):
+        y = ''
+        lessThanBase = x < base
+        while x/base != 0 or lessThanBase:
+          if(x%base!=0):
+              y= chr(self.getChar(x/base))+chr(self.getChar(x%base))+y
+          else:
+              y=chr(self.getChar(x/base))+'0'+y
+          x/=base
+          lessThanBase = False
+        return y
 
-transmit_speed = 100 # speed of one clock cycle, in ms
+    def getChar(self,x):
+      if x < 10: return x+48
+      else: return x+55
 
-morseQueue = Queue.Queue()
-transmitQueue = Queue.Queue()
-msgBuffer = []
-ourMac = ''
+    def reverseBase(self,x,base):
+        powers = range(len(x))[::-1]
+        val = 0
+        for i in range(len(x)):
+            val += self.getCharReverse(x[i])*base**powers[i]
+        return val
 
-def changeBase(x,base):
-    y = ''
-    lessThanBase = x < base
-    while x/base != 0 or lessThanBase:
-      if(x%base!=0):
-          y= chr(getChar(x/base))+chr(getChar(x%base))+y
-      else:
-          y=chr(getChar(x/base))+'0'+y
-      x/=base
-      lessThanBase = False
-    return y
+    def getCharReverse(self,x):
+        if ord(x)< 58: return ord(x)-48
+        else: return ord(x)-55
 
-def getChar(x):
-  if x < 10: return x+48
-  else: return x+55
+    def on(self):
+        GPIO.setup(self.out_pin, GPIO.OUT)
+        GPIO.output(self.out_pin,True)
 
-def on(): GPIO.output(out_pin,True)
+    def off(self):
+        GPIO.output(self.out_pin,False)
+        GPIO.setup(self.out_pin,GPIO.IN)
+    def blink(self,n=5,t=1000):
+        for i in range(n):
+            self.on()
+            sleep(t/1000.)
+            self.off()
+            sleep(t/1000.)
 
-def off(): GPIO.output(out_pin,False)
-
-def blink(n=5,t=1000):
-    for i in range(n):
-        on()
+    def dot(self,t):
+        self.on()
+        sleep(t/1000.) # locking this thread probably won't hurt anything (I think)
+        self.off()
         sleep(t/1000.)
-        off()
+
+    def dash(self,t):
+        self.on()
+        sleep((t*3)/1000.)
+        self.off()
         sleep(t/1000.)
 
 def dot(t):
@@ -188,54 +204,173 @@ def blinkMessage(message):
             if c[i] == ".":
                 dot(transmit_speed)
             else:
-                dash(transmit_speed)
-            if i == len(c)-1:
-                sleep((2.*transmit_speed)/1000) # gap between characters
-    #sleep((4.*transmit_speed)/1000) # plus 3 above = 7 -> between words
+                return 'notme'
+        else:
+            return 'badcksm'
 
-def blinkWorker():
-    while True:
-        message = transmitQueue.get()
-        if not message is None:
-            blinkMessage(message)
-            transmitQueue.task_done()
+    def dotOrDash(self,edge):
+        tolerance = (.3*self.transmit_speed)/1000
+        tDot = (self.transmit_speed)/1000.
+        tDash = (3.*self.transmit_speed)/1000
+        tStart = edge[0]
+        tDuration = edge[1]
+        #tPrevStart = edges[i-1][0]
+        #tPrevDuration = edges[i-1][1]
+        #tPrevEnd = (tPrevStart + tPrevDuration) # when the last wave ended
+        #tLow = tStart - tPrevEnd # the amount of time the line was low before this
+        if abs(tDuration-tDot) < tolerance:
+            return '.'
+        elif abs(tDuration-tDash) < tolerance:
+            return '-'
+        else:
+            return None
 
-def sendMassage(macto,message):
-    packet = packetize(macto, message)
-    #print packet
-    for char in packet:
-        transmitQueue.put_nowait(char)
-    print("Sending message!")
+    def toMorse(self,message):
+        morse = [self.letter_to_morse[c] for c in message]
+        return morse
 
-def packetize(macto,msg):
-    packet = macto+ourMac+changeBase(len(msg),36)+msg
-    return '99'+packet+changeBase(checksum(packet),36)+'+'
+    def toMessage(self,morse):
+        message = [self.morse_to_letter[c] for c in morse]
+        return message
 
-def checksum(msg):
-    msg = ''.join(msg)
-    cksm=0
-    for char in msg:
-        cksm^=ord(char)
-    return cksm
+    def blinkMessage(self,message):
+        morse = self.toMorse(message)
+        for c in morse:
+            for i in range(len(c)):
+                if c[i] == ".":
+                    self.dot(self.transmit_speed)
+                else:
+                    self.dash(self.transmit_speed)
+                if i == len(c)-1:
+                    sleep((2.*self.transmit_speed)/1000) # gap between characters
+        self.sent.append('sent')
+        #sleep((4.*self.transmit_speed)/1000) # plus 3 above = 7 -> between words
 
-if __name__ == '__main__':
-    try:
-        GPIO.setmode(GPIO.BOARD)
+    def blinkWorker(self):
+        while True:
+            while time()-self.lastTransmit < 50.*self.transmit_speed/1000:
+                sleep(.1)
+                pass
+            message = self.transmitQueue.get()
+            message = message[1] # drop the part setting the message's priority
+            if not message is None:
+                self.blinkMessage(message)
+                self.transmitQueue.task_done()
 
-        GPIO.setup(out_pin,GPIO.OUT)
-        GPIO.setup(in_pin,GPIO.IN)
+    def sendMassage(self,macto,message):
+        self.sent = [macto,message,randint(10,90)]
+        packet = self.packetize(macto, message)
+        #print packet
+        #for char in packet:
+        #    self.transmitQueue.put_nowait(char)
+        self.transmitQueue.put_nowait((1,packet))
+        print("Sending message!")
+        print(packet)
+        self.retr()
 
-        GPIO.add_event_detect(in_pin, GPIO.BOTH, callback=waveCallback)
+    def retr(self):
+        while not self.sent[-1] == 'sent':
+            sleep(1) # sleep a second
+            pass # block until message is sent
+        print("finished sending")
+        sentTime = time() # take note of when the message finished transmitting
+        waitTime = int(self.sent[2]) # how long to back off for
+        while True:
+            # if we get an ack, break and return
+            if not self.sent:
+                print("ack recieved!")
+                return
+            elif time()-sentTime > waitTime:
+                break
+        # else retry with the message
+        self.sendMassage(self.sent[0],self.sent[1])
+        return
 
-        recieveThread = Thread(target=findWords)
-        recieveThread.daemon = True
-        recieveThread.start()
+    def packetize(self,macto,msg):
+        packet = str(macto)+str(self.ourMac)+self.changeBase(len(msg),36)+msg
+        return '99'+packet+self.changeBase(self.checksum(packet),36)
 
-        transmitThread = Thread(target=blinkWorker)
-        transmitThread.daemon = True
-        transmitThread.start()
-        ourMac = 'AA'#changeBase(input('Enter unique MAC address between 0 and 1296: '))
-        #we should probably do a GPIO.cleanup() in here somewhere.
+    def checksum(self,msg):
+        msg = ''.join(msg)
+        cksm=0
+        for char in msg:
+            cksm^=ord(char)
+        return cksm
 
-    finally:
-        GPIO.cleanup()
+    def returnMessage(self,wait=False,timeout=None):
+        if wait:
+            try:
+                breakout = self.passUpQueue.get(True,timeout)
+                print(breakout)
+                ipfrom = breakout[8:11]
+                print(ipfrom)
+                msg = ''.join(breakout[8:-2])
+                print(msg)
+                return [ipfrom, msg]
+            except:
+                return None, None
+        else:
+            try:
+                breakout = self.passUpQueue.get_nowait()
+                print(breakout)
+                ipfrom = breakout[8:11]
+                print(ipfrom)
+                msg = ''.join(breakout[8:-2])
+                print(msg)
+                return [ipfrom, msg]
+            except:
+                return None, None
+
+    def setAddress(self, address):
+        # address is a tuple (host,port)
+        self.ourMac = address[0]
+        print("This device's MAC/IP has been changed to:")
+        print(self.ourMac)
+        #self.ourPort (or something) = address[1]
+        return
+
+    def __init__(self,inpin=11,outpin=7,address="EE"):
+        try:
+            self.letter_to_morse = {"\\":"----..","+":".-.-.","A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
+
+            self.morse_to_letter = {v:k for (k,v) in self.letter_to_morse.items()}
+
+            self.in_pin=inpin
+            self.out_pin=outpin
+            self.edgeList = []
+            self.pin_high = False
+            self.transmit_speed = 100 # speed of one clock cycle, in ms
+            self.recvLen = 0
+            self.msgBuffer = []
+            self.sent = []
+            self.lastTransmit = time()
+
+            self.morseQueue = Queue.Queue()
+            self.transmitQueue = Queue.PriorityQueue()
+            self.passUpQueue = Queue.Queue()
+
+            GPIO.setmode(GPIO.BOARD)
+            GPIO.setup(self.out_pin,GPIO.OUT)
+            GPIO.setup(self.in_pin,GPIO.IN)
+
+            GPIO.add_event_detect(self.in_pin, GPIO.BOTH, callback=self.waveCallback)
+
+            #self.retransmitThread = Thread(target=self.retr)
+            #self.retransmitThread = True
+            #seld.retransmitThread.start()
+
+            self.recieveThread = Thread(target=self.findWords)
+            self.recieveThread.daemon = True
+            self.recieveThread.start()
+
+            self.transmitThread = Thread(target=self.blinkWorker)
+            self.transmitThread.daemon = True
+            self.transmitThread.start()
+
+            self.ourMac = address
+            # in the form "EA" where E is the groupcode
+            # and A is the MAC
+
+        except:
+            print("Something went horribly awry when starting morse_code.py")
+
