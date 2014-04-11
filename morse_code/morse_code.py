@@ -7,13 +7,15 @@ class morseNet:
 
     def changeBase(self,x,base):
         y = ''
+        x = int(x)
+        base = int(base)
         lessThanBase = x < base
-        while x/base != 0 or lessThanBase:
+        while x//base != 0 or lessThanBase:
           if(x%base!=0):
-              y= chr(self.getChar(x/base))+chr(self.getChar(x%base))+y
+              y= chr(self.getChar(x//base))+chr(self.getChar(x%base))+y
           else:
-              y=chr(self.getChar(x/base))+'0'+y
-          x/=base
+              y=chr(self.getChar(x//base))+'0'+y
+          x//=base
           lessThanBase = False
         return y
 
@@ -274,7 +276,7 @@ class morseNet:
         return
 
     def packetize(self,macto,msg):
-        packet = str(macto)+str(self.ourMac)+self.changeBase(len(msg),36)+msg
+        packet = str(macto)+str(self.ourMac)+self.changeBase(int(len(msg)),36)+msg
         return '99'+packet+self.changeBase(self.checksum(packet),36)
 
     def checksum(self,msg):

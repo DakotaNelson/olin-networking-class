@@ -60,7 +60,6 @@ def parseMessage(current_message):
                 serv.sendMessage(user[1],user[2],user_name+': '+msg)
         else:
             serv.sendMessage(source_ip,source_port,"Error: you are not in any rooms.")
-    #adc://electra:2780
 ########################################################################################
 def detRoom(msg):
     for key in rooms.keys():
