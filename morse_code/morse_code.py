@@ -5,30 +5,25 @@ from time import sleep, time
 from random import randint
 class morseNet:
 
-    def changeBase(self,x,base):
-        y = ''
-        x = int(x)
-        base = int(base)
-        lessThanBase = x < base
-        while x//base != 0 or lessThanBase:
-          if(x%base!=0):
-              y= chr(self.getChar(x//base))+chr(self.getChar(x%base))+y
-          else:
-              y=chr(self.getChar(x//base))+'0'+y
-          x//=base
-          lessThanBase = False
-        return y
 
-    def getChar(self,x):
-      if x < 10: return x+48
-      else: return x+55
+    def changeBase(self,digit):
+        if digit < 10:
+          return str(digit)
+        return chr(ord('a') + digit - 10)
 
-    def reverseBase(self,x,base):
-        powers = range(len(x))[::-1]
-        val = 0
-        for i in range(len(x)):
-            val += self.getCharReverse(x[i])*base**powers[i]
-        return val
+    def str_base(self,number,base):
+        if number < 0:
+          return '-' + str_base(-number, base)
+        (d, m) = divmod(number, base)
+        if d > 0:
+            return str_base(d, base) + digit_to_char(m)
+        return digit_to_char(m)
+        def reverseBase(self,x,base):
+            powers = range(len(x))[::-1]
+            val = 0
+            for i in range(len(x)):
+                val += self.getCharReverse(x[i])*base**powers[i]
+            return val
 
     def getCharReverse(self,x):
         if ord(x)< 58: return ord(x)-48
