@@ -69,9 +69,10 @@ class morse_socket:
         return chr(ord('a') + digit - 10)
 
     def changeBase(self,number,base):
+        number = int(number)
         if number < 0:
           return '-' + str_base(-number, base)
         (d, m) = divmod(number, base)
         if d > 0:
             return str_base(d, base) + digit_to_char(m)
-        return digit_to_char(m)
+        return self.digit_to_char(m)
