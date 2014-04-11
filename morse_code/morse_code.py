@@ -244,7 +244,7 @@ class morseNet:
                 message = self.transmitQueue.get_nowait()
                 message = message[1] # drop the part setting the message's priority
             except:
-		message = None
+                message = None
             if not message is None:
                 self.blinkMessage(message)
                 self.transmitQueue.task_done()
@@ -261,22 +261,23 @@ class morseNet:
         self.retr()
 
     def retr(self):
-        while not self.sent[-1] == 'sent':
-            sleep(1) # sleep a second
-            pass # block until message is sent
-        print("finished sending")
-        sentTime = time() # take note of when the message finished transmitting
-        waitTime = int(self.sent[2]) # how long to back off for
-        while True:
-            # if we get an ack, break and return
-            if not self.sent:
-                print("ack recieved!")
-                return
-            elif time()-sentTime > waitTime:
-                break
-        # else retry with the message
-        self.sendMassage(self.sent[0],self.sent[1])
-        return
+        while len(self.sent)!=0:
+            while not self.sent[-1] == 'sent':
+                sleep(1) # sleep a second
+                pass # block until message is sent
+            print("finished sending")
+            senttime = time() # take note of when the message finished transmitting
+            waittime = int(self.sent[2]) # how long to back off for
+            while True:
+                # if we get an ack, break and return
+                if not self.sent:
+                    print("ack recieved!")
+                    return
+                elif time()-senttime > waittime:
+                    break
+            # else retry with the message
+            self.sendmassage(self.sent[0],self.sent[1])
+            return
 
     def packetize(self,macto,msg):
         packet = str(macto)+str(self.ourMac)+self.changeBase(int(len(msg)),36)+msg
