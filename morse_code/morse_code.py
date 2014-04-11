@@ -129,8 +129,9 @@ class morseNet:
             self.printMsg(self.msgBuffer)
             #self.transmitQueue.put_nowait(self.msgBuffer)
             if len(self.msgBuffer) == 11 and self.msgBuffer[8]=='E':
-                self.sent = []
-                pass
+                if (char(self.msgBuffer[2]) + char(self.msgBuffer[3])) == self.ourMac:
+                    self.sent = []
+                    pass
             else:
                 ackval = self.ack()
                 print ackval
@@ -237,7 +238,8 @@ class morseNet:
         while True:
             message = self.transmitQueue.get()
             if not message is None:
-                while time()-self.lastTransmit < 5.*transmit_speed:
+                while time()-self.lastTransmit < 25.*self.transmit_speed/1000:
+                    print("sleeping")
                     sleep(.1)
                     pass
                 self.blinkMessage(message)
