@@ -236,11 +236,11 @@ class morseNet:
 
     def blinkWorker(self):
         while True:
+            while time()-self.lastTransmit < 25.*self.transmit_speed/1000:
+                sleep(.1)
+                pass
             message = self.transmitQueue.get()
             if not message is None:
-                while time()-self.lastTransmit < 25.*self.transmit_speed/1000:
-                    sleep(.1)
-                    pass
                 self.blinkMessage(message)
                 self.transmitQueue.task_done()
 
