@@ -66,12 +66,12 @@ class morse_socket:
     def changeBase(self,x,base):
         y = ''
         lessThanBase = x < base
-        while x/base != 0 or lessThanBase:
+        while x//base != 0 or lessThanBase:
             if(x%base!=0):
-                y= chr(self.getChar(x/base))+chr(self.getChar(x%base))+y
+                y= chr(self.getChar(x//base))+chr(self.getChar(x%base))+y
             else:
-                y=chr(self.getChar(x/base))+'0'+y
-            x/=base
+                y=chr(self.getChar(x//base))+'0'+y
+            x//=base
             lessThanBase = False
         return y
     def getChar(self,x):
