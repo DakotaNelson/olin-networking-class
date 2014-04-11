@@ -334,7 +334,7 @@ class morseNet:
             self.lastTransmit = time()
 
             self.morseQueue = Queue.Queue()
-            self.transmitQueue = Queue.Queue()
+            self.transmitQueue = Queue.PriorityQueue()
             self.passUpQueue = Queue.Queue()
 
             GPIO.setmode(GPIO.BOARD)
