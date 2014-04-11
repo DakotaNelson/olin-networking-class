@@ -34,7 +34,7 @@ class morse_socket:
         # the protocol is "E" for now
         msg = bytearray_msg.decode("UTF-8") # don't actually want a bytearray
         UDP_packet = str(self.myport)+str(toport)+msg
-        UDPlen = int(self.changeBase(len(UDP_packet),36))
+        UDPlen = self.changeBase(len(UDP_packet),36)
         packet = str(toipaddr)+str(self.myipaddr)+'E'+str(UDPlen)+UDP_packet
         self.network.sendMassage(macto,packet)
         # packet structure:

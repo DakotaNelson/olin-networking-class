@@ -2,8 +2,7 @@ from morse_socket import morse_socket
 sock = morse_socket(morse_socket.AF_INET,morse_socket.SOCK_DGRAM)
 mac = input("Enter the server's two character MAC:")
 mac = mac.upper()
-sock.bind(["EI",11])
-print("This node's address is EI.")
+sock.bind(["EE",11])
 while True:
     msg = input("Enter a message to send to the server, composed of only alphanumerics... and no spaces or punctuation:")
     print(msg)
