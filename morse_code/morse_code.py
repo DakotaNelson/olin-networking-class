@@ -9,7 +9,7 @@ class morseNet:
     def digit_to_char(self,digit):
         if digit < 10:
           return str(digit)
-        return chr(ord('a') + digit - 10)
+        return chr(ord('a') + digit - 10).upper()
 
     def changeBase(self,number,base):
         number = int(number)
@@ -17,7 +17,7 @@ class morseNet:
           return '-' + str_base(-number, base)
         (d, m) = divmod(number, base)
         if d > 0:
-            return str_base(d, base) + digit_to_char(m)
+            return self.changeBase(d, base) + self.digit_to_char(m)
         return self.digit_to_char(m)
     def reverseBase(self,x,base):
         powers = range(len(x))[::-1]
