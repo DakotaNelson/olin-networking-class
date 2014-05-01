@@ -272,7 +272,7 @@ class morseNet:
                 elif time()-senttime > waittime:
                     break
             # else retry with the message
-            self.sendmassage(self.sent[0],self.sent[1])
+            self.sendMassage(self.sent[0],self.sent[1])
             return
 
     def packetize(self,macto,msg):
