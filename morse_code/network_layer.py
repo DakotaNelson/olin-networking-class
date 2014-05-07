@@ -29,7 +29,7 @@ class morseNet:
         if ord(x)< 58: return ord(x)-48
         else: return ord(x)-55
 
-    def getChar(self,c)
+    def getChar(self,x):
         if x< 10: return x+48
         else: return ord(x)-55
 
