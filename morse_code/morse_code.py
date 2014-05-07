@@ -211,7 +211,7 @@ class morseNet:
             return None
 
     def toMorse(self,message):
-        morse = [self.letter_to_morse[c] for c in message]
+        morse = [self.letter_to_morse[c] for c in message.upper()]
         return morse
 
     def toMessage(self,morse):
