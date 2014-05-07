@@ -16,6 +16,8 @@ class morseNet:
                 y=chr(self.getChar(x/base))+'0'+y
             x/=base
             lessThanBase = False
+        if len(y) == 1:
+            return '0'+y
         return y
 
     def reverseBase(self,x,base):
