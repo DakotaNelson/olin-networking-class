@@ -6,7 +6,7 @@ class morse_socket:
 
     def __init__(self,family,dtype):
         if family == 2 and dtype == 2:
-            import morse_code
+            import network_layer as morse_code
             outpin = 7
             inpin = 11
             self.network = morse_code.morseNet(inpin,outpin)

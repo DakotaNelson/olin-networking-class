@@ -1,4 +1,4 @@
-import morse_socket
+import network_layer as morse_socket
 import CN_Sockets
 
 lanNAT = {'83':'ES','73':'EI','69':'EE','84':'ET'}
