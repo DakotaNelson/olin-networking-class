@@ -28,10 +28,10 @@ recvThread.daemon = True
 recvThread.start()
 
 # Pick an address to send to
-mac = input("Enter the target server's two character MAC:")
+mac = input("Enter the target server's two character MAC: ")
 mac = mac.upper()
 
 while True:
-    msg = input("Enter a message to send to the server, composed of only alphanumerics... and no spaces or punctuation:")
+    msg = input("Enter a message to send to the server, composed of only alphanumerics... and no spaces or punctuation: \n")
     msg = str(msg).upper().encode('utf-8')
     sock.sendto(bytearray(msg),[mac,11])

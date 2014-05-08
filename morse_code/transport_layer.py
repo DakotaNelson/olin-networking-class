@@ -22,7 +22,7 @@ class morse_socket:
 
     def sendto(self,bytearray_msg,destination):
         if not self.network:
-            print("Socket has not been initialized.")
+            print("ERROR: Socket has not been initialized.")
             return False
         # destination is a tuple or list (ip,port)
         toipaddr = destination[0]
@@ -48,7 +48,7 @@ class morse_socket:
 
     def recvfrom(self,buflen=0):
         if not self.network:
-            print("Socket has not been initialized.")
+            print("ERROR: Socket has not been initialized.")
             return False
         # call the morse code recieve function
         msg = self.network.returnMessage(True,self.timeout)
@@ -70,7 +70,6 @@ class morse_socket:
         return
 
     def changeBase(self,x,base):
-        print(x)
         y = ''
         lessThanBase = x < base
         while x//base !=0 or lessThanBase:
