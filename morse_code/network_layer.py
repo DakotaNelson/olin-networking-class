@@ -6,15 +6,15 @@ from random import randint
 class morseNet:
 
 
-    def changeBase(self,number,base):
+    def changeBase(self,x,base):
         y = ''
-        lessThanBase = number < base
-        while x/base !=0 or lessThanBase:
+        lessThanBase = x < base
+        while x//base !=0 or lessThanBase:
             if(x%base != 0):
-                y=chr(self.getChar(x/base))+chr(self.getChar(x%base))+y
+                y=chr(self.getChar(x//base))+chr(self.getChar(x%base))+y
             else:
-                y=chr(self.getChar(x/base))+'0'+y
-            x/=base
+                y=chr(self.getChar(x//base))+'0'+y
+            x//=base
             lessThanBase = False
         if len(y) == 1:
             return '0'+y
@@ -28,12 +28,12 @@ class morseNet:
         return val
 
     def getCharReverse(self,x):
-        if ord(x)< 58: return ord(x)-48
-        else: return ord(x)-55
+        if x< 58: return x-48
+        else: return x-55
 
     def getChar(self,x):
-        if x< 10: return x+48
-        else: return ord(x)-55
+        if int(x)< 10: return x+48 
+        else: return x+55
 
     def on(self):
         GPIO.setup(self.out_pin, GPIO.OUT)

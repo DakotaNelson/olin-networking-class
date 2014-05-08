@@ -64,15 +64,16 @@ class morse_socket:
         self.timeout = timeout
         return
 
-    def changeBase(self,number,base):
+    def changeBase(self,x,base):
+        print(x)
         y = ''
-        lessThanBase = number < base
-        while x/base !=0 or lessThanBase:
+        lessThanBase = x < base
+        while x//base !=0 or lessThanBase:
             if(x%base != 0):
-                y=chr(self.getChar(x/base))+chr(self.getChar(x%base))+y
+                y=chr(self.getChar(x//base))+chr(self.getChar(x%base))+y
             else:
-                y=chr(self.getChar(x/base))+'0'+y
-            x/=base
+                y=chr(self.getChar(x//base))+'0'+y
+            x//=base
             lessThanBase = False
         if len(y) == 1:
             return '0'+y
@@ -80,4 +81,4 @@ class morse_socket:
 
     def getChar(self,x):
         if x< 10: return x+48
-        else: return ord(x)-55
+        else: return x+55
