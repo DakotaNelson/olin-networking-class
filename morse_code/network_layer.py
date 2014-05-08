@@ -137,7 +137,7 @@ class morseNet:
                     pass
             else:
                 ackval = self.ack()
-                if (str(self.msgBuffer[2])+str(self.msgBuffer[3])) == self.ourMac
+                if (str(self.msgBuffer[2])+str(self.msgBuffer[3])) == self.ourMac:
                     self.passUpQueue.put_nowait(self.msgBuffer)
             self.msgBuffer = []
             self.recvLen = 0
@@ -335,7 +335,7 @@ class morseNet:
 
             self.morse_to_letter = {v:k for (k,v) in self.letter_to_morse.items()}
 
-            self.verbose = False
+            self.verbose = True
 
             self.in_pin=inpin
             self.out_pin=outpin
