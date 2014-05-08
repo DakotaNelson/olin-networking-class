@@ -251,7 +251,7 @@ class morseNet:
                 self.transmitQueue.task_done()
 
     def sendMassage(self,macto,message):
-        self.sent = [macto,message,randint(10,90)]
+        self.sent = [macto,message,randint(20,90)]
         packet = self.packetize(macto, message)
         #print packet
         #for char in packet:
@@ -295,22 +295,28 @@ class morseNet:
         if wait:
             try:
                 breakout = self.passUpQueue.get(True,timeout)
-                print("The breakout is {}.").format(breakout)
-                ipfrom = breakout[8:12]
-                print("The ipfrom is {}.").format(ipfrom)
+                print("Breakout:")
+                print(breakout)
+                ipfrom = ''.join(breakout[4:6])
+                print("Ipfrom:")
+                print(ipfrom)
                 msg = ''.join(breakout[8:-2])
-                print("The message is {}.").format(msg)
+                print("Message:")
+                print(msg)
                 return [ipfrom, msg]
             except:
                 return None, None
         else:
             try:
                 breakout = self.passUpQueue.get_nowait()
-                print("The breakout is {}.").format(breakout)
-                ipfrom = breakout[8:12]
-                print("The ipfrom is {}.").format(ipfrom)
+                print("Breakout:")
+                print(breakout)
+                ipfrom = ''.join(breakout[4:6])
+                print("Ipfrom:")
+                print(ipfrom)
                 msg = ''.join(breakout[8:-2])
-                print("The message is {}.").format(msg)
+                print("Message:")
+                print(msg)
                 return [ipfrom, msg]
             except:
                 return None, None

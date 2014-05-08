@@ -52,14 +52,17 @@ class morse_socket:
             return False
         # call the morse code recieve function
         msg = self.network.returnMessage(True,self.timeout)
-        #print("Printing message:")
-        #print(msg)
-
-        if msg is None:
-            raise Exception('timeout')
-
+        # unpack the tuple
         address = msg[0]
         message = msg[1]
+        # check to make sure we got something
+        if message is None:
+            raise Exception('timeout')
+            return None,None
+        # remove the UDP encapsulation
+        message = message[10:]
+        #print("Printing message:")
+        #print(msg)
         return message,address
 
     def settimeout(self,timeout):
