@@ -264,12 +264,14 @@ class morseNet:
 
     def retr(self):
         while len(self.sent)!=0:
-            while not self.sent[-1] == 'sent':
+            while len(self.sent) != 0 and not self.sent[-1] == 'sent':
                 sleep(1) # sleep a second
                 pass # block until message is sent
             if self.verbose: print("finished sending")
             senttime = time() # take note of when the message finished transmitting
-            waittime = int(self.sent[2]) # how long to back off for
+            if len(self.sent) != 0: 
+                waittime = int(self.sent[2]) # how long to back off for
+                break
             while True:
                 # if we get an ack, break and return
                 if not self.sent:
@@ -335,7 +337,7 @@ class morseNet:
 
             self.morse_to_letter = {v:k for (k,v) in self.letter_to_morse.items()}
 
-            self.verbose = True
+            self.verbose = False
 
             self.in_pin=inpin
             self.out_pin=outpin
