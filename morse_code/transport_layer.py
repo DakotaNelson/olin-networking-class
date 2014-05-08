@@ -80,5 +80,5 @@ class morse_socket:
         return y
 
     def getChar(self,x):
-        if x< 10: return x+48
+        if ord(x)< 10: return x+48
         else: return x+55

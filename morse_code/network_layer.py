@@ -28,7 +28,7 @@ class morseNet:
         return val
 
     def getCharReverse(self,x):
-        if x< 58: return x-48
+        if ord(x)< 58: return x-48
         else: return x-55
 
     def getChar(self,x):

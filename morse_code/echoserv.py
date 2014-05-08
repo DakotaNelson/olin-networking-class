@@ -1,7 +1,7 @@
 from transport_layer import morse_socket
 sock = morse_socket(morse_socket.AF_INET,morse_socket.SOCK_DGRAM)
 sock.network.off()
-sock.bind(["EI",11])
+sock.bind(["EE",11])
 mac = input("Enter the target server's two character MAC:")
 mac = mac.upper()
 while True:
