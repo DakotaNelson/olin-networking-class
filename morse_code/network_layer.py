@@ -295,22 +295,22 @@ class morseNet:
         if wait:
             try:
                 breakout = self.passUpQueue.get(True,timeout)
-                print(breakout)
-                ipfrom = breakout[8:11]
-                print(ipfrom)
+                print("The breakout is {}.").format(breakout)
+                ipfrom = breakout[8:12]
+                print("The ipfrom is {}.").format(ipfrom)
                 msg = ''.join(breakout[8:-2])
-                print(msg)
+                print("The message is {}.").format(msg)
                 return [ipfrom, msg]
             except:
                 return None, None
         else:
             try:
                 breakout = self.passUpQueue.get_nowait()
-                print(breakout)
-                ipfrom = breakout[8:11]
-                print(ipfrom)
+                print("The breakout is {}.").format(breakout)
+                ipfrom = breakout[8:12]
+                print("The ipfrom is {}.").format(ipfrom)
                 msg = ''.join(breakout[8:-2])
-                print(msg)
+                print("The message is {}.").format(msg)
                 return [ipfrom, msg]
             except:
                 return None, None

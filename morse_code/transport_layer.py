@@ -52,6 +52,8 @@ class morse_socket:
             return False
         # call the morse code recieve function
         msg = self.network.returnMessage(True,self.timeout)
+        print("Printing message:")
+        print(msg)
 
         if msg is None:
             raise Exception('timeout')
