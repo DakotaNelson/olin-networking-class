@@ -5,7 +5,7 @@ from time import sleep
 # Set up our socket
 sock = morse_socket(morse_socket.AF_INET,morse_socket.SOCK_DGRAM)
 sock.network.off()
-sock.bind(["EI",11])
+sock.bind(["EE",11])
 
 # Function to recieve messages
 def recv():

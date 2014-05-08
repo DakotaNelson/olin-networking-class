@@ -137,7 +137,8 @@ class morseNet:
                     pass
             else:
                 ackval = self.ack()
-            self.passUpQueue.put_nowait(self.msgBuffer)
+            if len(self.msgBuffer) >=4 and (self.msgBuffer[2] + self.msgBuffer[3]) == self.ourMac:
+                self.passUpQueue.put_nowait(self.msgBuffer)
             self.msgBuffer = []
             self.recvLen = 0
             return
