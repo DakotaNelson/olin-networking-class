@@ -121,13 +121,16 @@ class morseNet:
 
         print(char)
         self.msgBuffer.append(char)
-        if len(self.msgBuffer)==8:
+        if len(self.msgBuffer)==8: # we've recieved up to the length field
             self.recvLen = self.reverseBase(self.msgBuffer[6]+self.msgBuffer[7],36)
-        if len(self.msgBuffer)==self.recvLen+10:
+        if len(self.msgBuffer)==self.recvLen+10: # we've recieved the whole message
+            if self.router: # if the program on top of this is a router
+                if str(self.msgBuffer[2]) != self.ourMac[0]: # and if the destination groupcode is different than ours
+                    self.passUpQueue.put_nowait(self.msgBuffer)
+                    return
             self.printMsg(self.msgBuffer)
-            #self.transmitQueue.put_nowait((1,self.msgBuffer))
-            if len(self.msgBuffer) == 11 and self.msgBuffer[8]=='E':
-                if (str(self.msgBuffer[2]) + str(self.msgBuffer[3])) == self.ourMac:
+            if len(self.msgBuffer) == 11 and self.msgBuffer[8]=='E': # we got an ack
+                if (str(self.msgBuffer[2]) + str(self.msgBuffer[3])) == self.ourMac: # and it's to us!
                     self.sent = []
                     pass
             else:
@@ -359,6 +362,10 @@ class morseNet:
             self.ourMac = address
             # in the form "EA" where E is the groupcode
             # and A is the MAC
+            self.router = False
+            # is this interface for a router
+            # routers must recieve and ack any message to any group code other
+            # than that of its mac address
 
         except Exception as e:
             print(e)

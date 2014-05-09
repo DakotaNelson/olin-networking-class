@@ -16,6 +16,8 @@ with socket(AF_INET, SOCK_DGRAM) as wan:
     wan.settimeout(0.1)
     lan.settimeout(0.1)
 
+    lan.network.router = True
+
     while True:
         try:
             msg,addr = lan.recvfrom()
