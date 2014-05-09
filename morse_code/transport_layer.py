@@ -22,7 +22,7 @@ class morse_socket:
 
     def sendto(self,bytearray_msg,destination):
         if not self.network:
-            print("Socket has not been initialized.")
+            print("ERROR: Socket has not been initialized.")
             return False
         # destination is a tuple or list (ip,port)
         toipaddr = destination[0]
@@ -48,32 +48,41 @@ class morse_socket:
 
     def recvfrom(self,buflen=0):
         if not self.network:
-            print("Socket has not been initialized.")
+            print("ERROR: Socket has not been initialized.")
             return False
         # call the morse code recieve function
         msg = self.network.returnMessage(True,self.timeout)
-
-        if msg is None:
-            raise Exception('timeout')
-
+        # unpack the tuple
         address = msg[0]
         message = msg[1]
+        # check to make sure we got something
+        if message is None:
+            raise Exception('timeout')
+            return None,None
+        # remove the UDP encapsulation
+        message = message[10:]
+        #print("Printing message:")
+        #print(msg)
         return message,address
 
     def settimeout(self,timeout):
         self.timeout = timeout
         return
 
-    def digit_to_char(self,digit):
-        if digit < 10:
-          return str(digit)
-        return chr(ord('a') + digit - 10)
+    def changeBase(self,x,base):
+        y = ''
+        lessThanBase = x < base
+        while x//base !=0 or lessThanBase:
+            if(x%base != 0):
+                y=chr(self.getChar(x//base))+chr(self.getChar(x%base))+y
+            else:
+                y=chr(self.getChar(x//base))+'0'+y
+            x//=base
+            lessThanBase = False
+        if len(y) == 1:
+            return '0'+y
+        return y
 
-    def changeBase(self,number,base):
-        number = int(number)
-        if number < 0:
-          return '-' + str_base(-number, base)
-        (d, m) = divmod(number, base)
-        if d > 0:
-            return str_base(d, base) + digit_to_char(m)
-        return self.digit_to_char(m)
+    def getChar(self,x):
+        if x< 10: return x+48
+        else: return x+55

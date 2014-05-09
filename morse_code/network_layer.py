@@ -6,19 +6,20 @@ from random import randint
 class morseNet:
 
 
-    def digit_to_char(self,digit):
-        if digit < 10:
-          return str(digit)
-        return chr(ord('a') + digit - 10).upper()
+    def changeBase(self,x,base):
+        y = ''
+        lessThanBase = x < base
+        while x//base !=0 or lessThanBase:
+            if(x%base != 0):
+                y=chr(self.getChar(x//base))+chr(self.getChar(x%base))+y
+            else:
+                y=chr(self.getChar(x//base))+'0'+y
+            x//=base
+            lessThanBase = False
+        if len(y) == 1:
+            return '0'+y
+        return y
 
-    def changeBase(self,number,base):
-        number = int(number)
-        if number < 0:
-          return '-' + str_base(-number, base)
-        (d, m) = divmod(number, base)
-        if d > 0:
-            return self.changeBase(d, base) + self.digit_to_char(m)
-        return self.digit_to_char(m)
     def reverseBase(self,x,base):
         powers = range(len(x))[::-1]
         val = 0
@@ -29,6 +30,10 @@ class morseNet:
     def getCharReverse(self,x):
         if ord(x)< 58: return ord(x)-48
         else: return ord(x)-55
+
+    def getChar(self,x):
+        if x< 10: return x+48
+        else: return x+55
 
     def on(self):
         GPIO.setup(self.out_pin, GPIO.OUT)
@@ -119,23 +124,24 @@ class morseNet:
             print('ERROR: KeyError thrown in translation of waveforms')
             return
 
-        print(char)
+        if self.verbose: print(char)
         self.msgBuffer.append(char)
         if len(self.msgBuffer)==8: # we've recieved up to the length field
             self.recvLen = self.reverseBase(self.msgBuffer[6]+self.msgBuffer[7],36)
         if len(self.msgBuffer)==self.recvLen+10: # we've recieved the whole message
+            if self.verbose: self.printMsg(self.msgBuffer)
             if self.router: # if the program on top of this is a router
                 if str(self.msgBuffer[2]) != self.ourMac[0]: # and if the destination groupcode is different than ours
                     self.passUpQueue.put_nowait(self.msgBuffer)
                     return
-            self.printMsg(self.msgBuffer)
             if len(self.msgBuffer) == 11 and self.msgBuffer[8]=='E': # we got an ack
                 if (str(self.msgBuffer[2]) + str(self.msgBuffer[3])) == self.ourMac: # and it's to us!
                     self.sent = []
                     pass
             else:
                 ackval = self.ack()
-            self.passUpQueue.put_nowait(self.msgBuffer)
+                if (str(self.msgBuffer[2])+str(self.msgBuffer[3])) == self.ourMac:
+                    self.passUpQueue.put_nowait(self.msgBuffer)
             self.msgBuffer = []
             self.recvLen = 0
             return
@@ -178,18 +184,18 @@ class morseNet:
         print(nice)
 
     def ack(self):
-        print('ack')
+        if self.verbose: print('ack')
         if self.changeBase(self.checksum(self.msgBuffer[2:-2]),36) == self.msgBuffer[-2]+self.msgBuffer[-1]:
             if self.ourMac == self.msgBuffer[2] + self.msgBuffer[3]:
                 if len(self.msgBuffer)==12 and self.msgBuffer[8]=='E':
                     self.sent = []
-                    print("clearing self.sent")
+                    if self.verbose: print("clearing self.sent")
                     return 'ackrecv'
                 else:
                     #self.sendMassage(self.msgBuffer[4] + self.msgBuffer[5],'E')
                     packet = self.packetize(self.msgBuffer[4]+self.msgBuffer[5],'E')
                     self.transmitQueue.put_nowait((0,packet))
-                    print("sent an ack")
+                    if self.verbose: print("sent an ack")
                     return 'acksend'
             else:
                 return 'notme'
@@ -249,28 +255,30 @@ class morseNet:
                 self.transmitQueue.task_done()
 
     def sendMassage(self,macto,message):
-        self.sent = [macto,message,randint(10,90)]
+        self.sent = [macto,message,randint(20,90)]
         packet = self.packetize(macto, message)
         #print packet
         #for char in packet:
         #    self.transmitQueue.put_nowait(char)
         self.transmitQueue.put_nowait((1,packet))
-        print("Sending message!")
-        print(packet)
+        if self.verbose: print("Sending message!")
+        if self.verbose: print(packet)
         self.retr()
 
     def retr(self):
         while len(self.sent)!=0:
-            while not self.sent[-1] == 'sent':
+            while len(self.sent) != 0 and not self.sent[-1] == 'sent':
                 sleep(1) # sleep a second
                 pass # block until message is sent
-            print("finished sending")
+            if self.verbose: print("finished sending")
             senttime = time() # take note of when the message finished transmitting
-            waittime = int(self.sent[2]) # how long to back off for
+            if len(self.sent) != 0:
+                waittime = int(self.sent[2]) # how long to back off for
+                break
             while True:
                 # if we get an ack, break and return
                 if not self.sent:
-                    print("ack recieved!")
+                    if self.verbose: print("ack recieved!")
                     return
                 elif time()-senttime > waittime:
                     break
@@ -293,22 +301,28 @@ class morseNet:
         if wait:
             try:
                 breakout = self.passUpQueue.get(True,timeout)
-                print(breakout)
-                ipfrom = breakout[8:11]
-                print(ipfrom)
+                if self.verbose: print("Breakout:")
+                if self.verbose: print(breakout)
+                ipfrom = ''.join(breakout[4:6])
+                if self.verbose: print("Ipfrom:")
+                if self.verbose: print(ipfrom)
                 msg = ''.join(breakout[8:-2])
-                print(msg)
+                if self.verbose: print("Message:")
+                if self.verbose: print(msg)
                 return [ipfrom, msg]
             except:
                 return None, None
         else:
             try:
                 breakout = self.passUpQueue.get_nowait()
-                print(breakout)
-                ipfrom = breakout[8:11]
-                print(ipfrom)
+                if self.verbose: print("Breakout:")
+                if self.verbose: print(breakout)
+                ipfrom = ''.join(breakout[4:6])
+                if self.verbose: print("Ipfrom:")
+                if self.verbose: print(ipfrom)
                 msg = ''.join(breakout[8:-2])
-                print(msg)
+                if self.verbose: print("Message:")
+                if self.verbose: print(msg)
                 return [ipfrom, msg]
             except:
                 return None, None
@@ -316,8 +330,7 @@ class morseNet:
     def setAddress(self, address):
         # address is a tuple (host,port)
         self.ourMac = address[0]
-        print("This device's MAC/IP has been changed to:")
-        print(self.ourMac)
+        print("This device's MAC/IP has been changed to:" + str(self.ourMac))
         #self.ourPort (or something) = address[1]
         return
 
@@ -326,6 +339,8 @@ class morseNet:
             self.letter_to_morse = {"\\":"----..","+":".-.-.","A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"}
 
             self.morse_to_letter = {v:k for (k,v) in self.letter_to_morse.items()}
+
+            self.verbose = False
 
             self.in_pin=inpin
             self.out_pin=outpin
