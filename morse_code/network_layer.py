@@ -133,6 +133,7 @@ class morseNet:
             if self.router: # if the program on top of this is a router
                 if str(self.msgBuffer[2]) != self.ourMac[0]: # and if the destination groupcode is different than ours
                     self.passUpQueue.put_nowait(self.msgBuffer)
+                    ackval = self.ack()
                     return
             if len(self.msgBuffer) == 11 and self.msgBuffer[8]=='E': # we got an ack
                 if (str(self.msgBuffer[2]) + str(self.msgBuffer[3])) == self.ourMac: # and it's to us!
