@@ -1,4 +1,4 @@
-import network_layer as morse_socket
+from transport_layer import morse_socket
 import CN_Sockets
 
 lanNAT = {'83':'ES','73':'EI','69':'EE','84':'ET'}
@@ -9,7 +9,7 @@ portLookup = {'84':'A','69':'11','73':'E'}
 
 socket, AF_INET, SOCK_DGRAM, timeout = CN_Sockets.CN_Socket, CN_Sockets.AF_INET, CN_Sockets.SOCK_DGRAM, CN_Sockets.timeout
 
-lan = morse_socket.morse_socket(2,2)
+lan = morse_socket(2,2)
 with socket(AF_INET, SOCK_DGRAM) as wan:
 #wan = morse_socket.morse_socket(2,2)
 
@@ -19,8 +19,9 @@ with socket(AF_INET, SOCK_DGRAM) as wan:
     while True:
         try:
             msg,addr = lan.recvfrom()
-        except timeout:
+        except:
             #print("No LAN messages.")
+            msg = None
             pass
 
         if msg is not None:
@@ -45,6 +46,7 @@ with socket(AF_INET, SOCK_DGRAM) as wan:
             msg = bytearray_msg.decode("UTF-8")
         except:
             #print("No WAN messages.")
+            msg = None
             pass
 
         if msg is not None:
