@@ -41,7 +41,9 @@ with socket(AF_INET, SOCK_DGRAM) as wan:
                 print("Sending message to:")
                 print(msg)
                 print([destmac,destport])
-                wan.sendto(bytearray(msg),[destmac,destport])
+                msglen = changeBase(len(msg)+4,36)
+                # |IPTO|IPFROM|PROTOCOL|LEN|PORTTO|PORTFROM|MSG|
+                wan.sendto(bytearray(ipto+ipfrom+E+msglen+destport+'11'+msg),[destmac,destport])
 
         try:
             bytearray_msg, addr = wan.recvfrom(1024)
@@ -67,3 +69,24 @@ with socket(AF_INET, SOCK_DGRAM) as wan:
                 print(msg)
                 print([destmac,11])
                 lan.sendto(bytearray(msg),[destmac,11])
+
+
+
+
+def changeBase(x,base):
+    y = ''
+    lessThanBase = x < base
+    while x//base !=0 or lessThanBase:
+        if(x%base != 0):
+            y=chr(self.getChar(x//base))+chr(self.getChar(x%base))+y
+        else:
+            y=chr(self.getChar(x//base))+'0'+y
+        x//=base
+        lessThanBase = False
+    if len(y) == 1:
+        return '0'+y
+    return y
+
+def getChar(x):
+    if x< 10: return x+48
+    else: return x+55
